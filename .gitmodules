@@ -1,0 +1,3 @@
+[submodule "Amber"]
+	path = Amber
+	url = https://github.com/jbechara/Amber
