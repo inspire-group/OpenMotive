@@ -15,5 +15,5 @@ This program relays information from the vehicle OBDII port to any OBDII device 
 - Secure: use data shuffling to stop private information leakage while keeping any OBDII device fully functional.
 
 
-<p><img src='./OBD/Elastic\ Pathing\ Results.png'/></p>
+<p><img src='OBD/Elastic\ Pathing\ Results.png'/></p>
 ![Elastic Pathing Results](./OBD/Elastic\ Pathing\ Results.png "Elastic Pathing Results")
