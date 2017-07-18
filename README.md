@@ -14,4 +14,4 @@ This program relays information from the vehicle OBDII port to any OBDII device 
 - Standard: relay the information from the vehicle exactly as it was received.
 - Secure: use data shuffling to stop private information leakage while keeping any OBDII device fully functional.
 
-![Alt text](/OBD/Elastic\ Pathing\ Results.png?raw=true "Elastic Pathing Results")
+![alt text](./OBD/Elastic\ Pathing\ Results.png?raw=true "Elastic Pathing Results")
