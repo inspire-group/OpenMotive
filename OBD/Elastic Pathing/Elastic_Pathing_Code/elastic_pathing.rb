@@ -119,7 +119,7 @@ loop.each{ |elem|
     speedLimitation=true
     exceeding_max_speed=25
   end
-  
+
 begin
 
 # set up timer to force stop after 60 seconds. Usually, the result will come out in less than 10 seconds.
@@ -147,25 +147,25 @@ navigator = Navigator.new(ARGV[1], LOG, turnLimitation)
 ElasticPath.setNavigator(navigator)
 ElasticPath.setLogfile(@logfile)
 
-#Set a clipping interval and cut the points occuring faster than this rate.
+# Set a clipping interval and cut the points occuring faster than this rate.
 
 speeds = []
 delta_idx = 0
 
-#Read in speed statistics
+# Read in speed statistics
 
 @total_distance = 0
 @total_time     = 0
 speed_rundown = 0
 
-@path_data.execute("SELECT speed, time from speeds ORDER BY time ASC;"){|r| 
+@path_data.execute("SELECT speed, time from speeds ORDER BY time ASC;"){|r|
   delta = 0
   speed_delta = 0
   cur_time = r[1].to_i
   cur_speed = r[0].to_f
   speed_minimum = 0
 
-  #See if a delta speed is available
+  # See if a delta speed is available
 
   if (speeds.empty? or speeds[-1].time + DELTA_INTERVAL <= cur_time)
     if (not speeds.empty?)
@@ -174,10 +174,10 @@ speed_rundown = 0
       @total_time += delta
     end
 
-    #This only applies to unsmoothed data.
+    # This only applies to unsmoothed data.
 
     if (0 < speed_delta)
-      #Clear speed rundown and record the minimum if we just rose up from the bottom
+      # Clear speed rundown and record the minimum if we just rose up from the bottom
       speed_minimum = speed_rundown
       speed_rundown = 0
     else
@@ -185,10 +185,10 @@ speed_rundown = 0
       speed_minimum = 0
     end
 
-    #Calculate the movement from this sample: convert miles per millisecond to mph
+    # Calculate the movement from this sample: convert miles per millisecond to mph
 
     movement = (delta)*cur_speed/(60*60*1000.0)
-    #Total distance in miles
+    # Total distance in miles
     @total_distance += movement
     speeds.push Sample.new(cur_time, cur_speed, movement, speed_delta, delta/1000.0, speed_minimum)
   end
@@ -198,15 +198,15 @@ puts "Total time (ms) and distance (miles) are #{@total_time} and #{@total_dista
 avg_speed = speeds.inject(0.0){|avg, x| avg + x.speed / speeds.length.to_f}
 
 ################################################################################
-#Build a turn probability table with a mapping from time intervals to
-#speed change types (speed increasing, speed decreasing, speed stable)
-#First get all of the stable speed values above 15mph
+# Build a turn probability table with a mapping from time intervals to
+# speed change types (speed increasing, speed decreasing, speed stable)
+# First get all of the stable speed values above 15mph
 
 stable_speeds = speeds.select{|sample|
   sample.speed > 15 and sample.speed_delta.abs < 2
 }
 
-#Now that samples are stable we need to cut the speeds into sections
+# Now that samples are stable we need to cut the speeds into sections
 
 segments = []
 while (not stable_speeds.empty?)
@@ -228,25 +228,25 @@ class SpeedInterval
   end
 end
 
-#Now compact the segments into time intervals with average speeds
+# Now compact the segments into time intervals with average speeds
 
 speed_intervals = segments.map{|segment|
-  #Average the speed and record the first and last times
+  # Average the speed and record the first and last times
   segment_avg = segment.inject(0.0){|avg, x| avg + x.speed / segment.length.to_f}
   SpeedInterval.new(segment.first.time, segment.last.time, segment_avg)
 }
 
-#Get rid of any segments that last for less than 10 seconds
-#This is trying to get rid of ramp and transient accelerations/decelerations
+# Get rid of any segments that last for less than 10 seconds
+# This is trying to get rid of ramp and transient accelerations/decelerations
 
 speed_intervals = speed_intervals.select{|interval|
   interval.stop - interval.start > 10*1000.0
 }
 
-#Now anneal sections that are within 5mph of each other. Smooths
-#out intervals after the transient sections were removed
-#Each labelled interval has its start and stop time, and the speed at the
-#beginning of the interval
+# Now anneal sections that are within 5mph of each other. Smooths
+# out intervals after the transient sections were removed
+# Each labelled interval has its start and stop time, and the speed at the
+# beginning of the interval
 
 labelled_intervals = [speed_intervals.first]
 
@@ -265,10 +265,10 @@ speed_intervals.each_index{|i|
   end
 }
 
-#Expected changes happen between the labelled intervals
+# Expected changes happen between the labelled intervals
 
 @change_intervals = labelled_intervals[1..-1].zip(labelled_intervals).map{|second, first|
-  #Transition to second.speed during the interval from first.stop to second.start
+  # Transition to second.speed during the interval from first.stop to second.start
   SpeedInterval.new(first.stop, second.start, second.speed)
 }
 
@@ -287,14 +287,14 @@ putlog "Change intervals are:"
   putlog "#{x}, (duration is #{(x.stop - x.start)/1000.0} seconds)"
 }
 
-#Now correct the end of that path. Find the last stable interval and use that as
-#the endpoint. This should clip out maneuvering in parking lots and such.
-#Want all points up to and including labelled_intervals.last.stop
+# Now correct the end of that path. Find the last stable interval and use that as
+# the endpoint. This should clip out maneuvering in parking lots and such.
+# Want all points up to and including labelled_intervals.last.stop
 
 speeds = speeds.take_while{|s| s.time <= labelled_intervals.last.stop}
 
-#Return nil if no speed transition is expected, otherwise return a
-#SpeedInterval with the time interval and the expected speed to turn into
+# Return nil if no speed transition is expected, otherwise return a
+# SpeedInterval with the time interval and the expected speed to turn into
 
 def expectedTransition(time)
   @change_intervals.select {|interval|
@@ -303,19 +303,19 @@ def expectedTransition(time)
 end
 
 ################################################################################
-#Convenience function to normalize distance correction errors to
-#time correction errors
-#This function was used in the testing stage.
+# Convenience function to normalize distance correction errors to
+# time correction errors
+# This function was used in the testing stage.
 
 def normalizeDistance(dist)
   dist * @total_time / @total_distance
 end
 
 
-#Returns true if this node is reachable in noticeably less time
-#This function was used in the testing stage.
-#Although following code is not calling this anymore, 
-#it may be useful for future addition.
+# Returns true if this node is reachable in noticeably less time
+# This function was used in the testing stage.
+# Although following code is not calling this anymore,
+# it may be useful for future addition.
 
 @arrival_times = {}
 def tooSlow(node, time)
@@ -331,25 +331,25 @@ def tooSlow(node, time)
 end
 
 ################################################################################
-#Pathing begins here!
-#First we find the starting point and then we start pathing.
+# Pathing begins here!
+# First we find the starting point and then we start pathing.
 ################################################################################
 
 start_gps = []
 end_gps = []
 gps_trace = []
 
-@path_data.execute("SELECT latitude, longitude from gpstrace order by time asc limit 1;"){|r| 
+@path_data.execute("SELECT latitude, longitude from gpstrace order by time asc limit 1;"){|r|
   start_gps = [r[0].to_f, r[1].to_f]
 }
 
-@path_data.execute("SELECT latitude, longitude from gpstrace WHERE time <= #{speeds.last.time} order by time desc limit 1;"){|r| 
+@path_data.execute("SELECT latitude, longitude from gpstrace WHERE time <= #{speeds.last.time} order by time desc limit 1;"){|r|
   end_gps = [r[0].to_f, r[1].to_f]
 }
 
-#Store [time, lat, lon] tuples
+# Store [time, lat, lon] tuples
 
-@path_data.execute("SELECT time, latitude, longitude from gpstrace WHERE time <= #{speeds.last.time} order by time;"){|r| 
+@path_data.execute("SELECT time, latitude, longitude from gpstrace WHERE time <= #{speeds.last.time} order by time;"){|r|
   gps_trace += [[r[0].to_i, r[1].to_f, r[2].to_f]]
 }
 
@@ -358,8 +358,8 @@ has_path = false
 has_firstnode = false
 first_time = nil
 
-#See if there is a nodepath or firstnode table.
-#Don't use the raw gps point, this leads to hilarity (eg. going down train tracks)
+# See if there is a nodepath or firstnode table.
+# Don't use the raw gps point, this leads to hilarity (eg. going down train tracks)
 
 @path_data.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='nodepath';"){|r|
   has_path = true
@@ -370,13 +370,13 @@ first_time = nil
 }
 
 if (has_path)
-  @path_data.execute("SELECT nid, latitude, longitude from nodepath order by time asc limit 1;"){|r| 
+  @path_data.execute("SELECT nid, latitude, longitude from nodepath order by time asc limit 1;"){|r|
     first_node = Node.new(r[0].to_i, r[1].to_f, r[2].to_f)
     first_node.wid=navigator.nodeFromID(r[0].to_i,speeds.first.time).wid
   }
 elsif (has_firstnode)
   first_nid  = nil
-  @path_data.execute("SELECT time, \"node id\" from firstnode;"){|r| 
+  @path_data.execute("SELECT time, \"node id\" from firstnode;"){|r|
     puts "Getting firstnode results: #{r}"
     first_time = r[0].to_i
     first_nid = r[1].to_i
@@ -394,32 +394,32 @@ if (nil == first_node)
   exit
 end
 
-#Drop samples from before the new starting time if we needed to
-#advance along several nodes to find a OSM node match.
+# Drop samples from before the new starting time if we needed to
+# advance along several nodes to find a OSM node match.
 
 if (nil != first_time)
   speeds = speeds.drop_while{|s| s.time < first_time}
   gps_trace = gps_trace.drop_while{|s| s[0] < first_time}
-  #Re-find the first GPS coordinate
-  @path_data.execute("SELECT latitude, longitude from gpstrace where time = #{speeds[0].time};"){|r| 
+  # Re-find the first GPS coordinate
+  @path_data.execute("SELECT latitude, longitude from gpstrace where time = #{speeds[0].time};"){|r|
     start_gps = [r[0].to_f, r[1].to_f]
   }
 end
 
-#Distance from the first GPS coordinate to the first OSM point
+# Distance from the first GPS coordinate to the first OSM point
 
 first_distance = haversine_mi(start_gps[0], start_gps[1], first_node.lat, first_node.lon)
 putlog "Starting from first node #{first_node} with wid #{first_node.wid}"
 
-#Start off with a single path
+# Start off with a single path
 
 cur_paths = [Path.new(first_node)]
 @total_moved = 0
 
 #####################################################################################
-#False until the beginning of a turn when @turn_active becomes true.
-#Turns false again when the turn ends. Paths are checked at the falling
-#edge to make sure they completed their turn.
+# False until the beginning of a turn when @turn_active becomes true.
+# Turns false again when the turn ends. Paths are checked at the falling
+# edge to make sure they completed their turn.
 
 @turn_active = false
 
@@ -443,11 +443,11 @@ min_dist_to = {}
 
 
 ################################################################################
-#This is code to make plots for papers.
-#Print out all nodes explored at this level of progress.
+# This is code to make plots for papers.
+# Print out all nodes explored at this level of progress.
 
 def printPlottable(progress, partial_paths)
-  #Keep a map of already printed nodes to avoid making a huge output file.
+  # Keep a map of already printed nodes to avoid making a huge output file.
   printed = {}
   partial_paths.each {|ep|
     ep.path.each {|node|
@@ -475,13 +475,13 @@ end
 
 
 ################################################################################
-#Pathing with Priority First Search
+# Pathing with Priority First Search
 ################################################################################
-#Create a queue (sorted by error) to store each possible path.
-#Explore the top path until its error increases to over that of the next path
-#Once a path completes it is the best fit path (or tied with best fit)
-#Continue looping until the best incomplete path is worse than our desired
-#quality relative to the first path
+# Create a queue (sorted by error) to store each possible path.
+# Explore the top path until its error increases to over that of the next path
+# Once a path completes it is the best fit path (or tied with best fit)
+# Continue looping until the best incomplete path is worse than our desired
+# quality relative to the first path
 
 completed_paths = []
 selection_ratio = 1.1
@@ -494,7 +494,7 @@ last_reported = 0
 #selection ratio of the already completed ones
 
 while (not partial_paths.empty? and
-       (completed_paths.empty? or 
+       (completed_paths.empty? or
           partial_paths.last.overall_err.abs < selection_ratio*completed_paths.first.overall_err.abs))
 
   putlog "There are now #{partial_paths.length} partial paths and #{completed_paths.length} completed ones."
@@ -523,10 +523,10 @@ while (not partial_paths.empty? and
   partial_paths.pop
   speeding=best_path.speed_samples[best_path.time_index].speed
 
-  # if speedLimitation option is turned on, speed exceeds the limitation, (speed is not decreasing), 
+  # if speedLimitation option is turned on, speed exceeds the limitation, (speed is not decreasing),
   # and maximum allowed speed from OSM DB is greater than 20 mph, we should drop this path. It is not one of possible paths.
 
-  if (true==speedLimitation and 1<best_path.path.length and 
+  if (true==speedLimitation and 1<best_path.path.length and
 
   # The following line (condition for speed is not decreasing) should be commented out for New Jersey (sub-urban) dataset and
   # uncommented for the Seattle (urban) dataset for the best results through our testing. Therefore, depending on the driving
@@ -534,12 +534,12 @@ while (not partial_paths.empty? and
 
        #best_path.speed_samples[best_path.time_index].speed_delta>0 and
 
-       get_speed(best_path.path.last.wid,navigator)[1]+exceeding_max_speed< speeding and 
+       get_speed(best_path.path.last.wid,navigator)[1]+exceeding_max_speed< speeding and
         20 < get_speed(best_path.path.last.wid, navigator)[1])
 
            putlog "way too fast, going #{speeding} but limit is #{get_speed(best_path.path.last.wid,navigator)[1]}"
            puts "way too fast, going #{speeding} but limit is #{get_speed(best_path.path.last.wid,navigator)[1]}"
-  else    
+  else
 
     # Advance the best path and store the newly explored paths to the corresponding group.
 
@@ -569,8 +569,8 @@ end_lat = end_gps[0]
 end_lon = end_gps[1]
 end_node = Node.new(0, end_lat, end_lon, 0)
 
-#Sort by ascending error
-#Print out the best possible path from Elastic Pathing algorithm
+# Sort by ascending error
+# Print out the best possible path from Elastic Pathing algorithm
 
 cur_paths.sort!{|x,y| x.overall_err.abs <=> y.overall_err.abs}
   puts "best path:"
@@ -579,7 +579,7 @@ cur_paths.each_index{|i|
   putlog "Path #{i} is #{path}"
   if (nil != path)
     putlog "Dist is #{path.path.last.distance(end_node)} miles (after moving #{@total_distance} miles) ending at (#{path.path[-1].lat}, #{path.path[-1].lon})"
-    if (i==0) 
+    if (i==0)
       @strinNew = "Dist is #{path.path.last.distance(end_node)} miles (after moving #{@total_distance} miles) ending at (#{path.path[-1].lat}, #{path.path[-1].lon})"
       end
     putlog "Path coordinates were:"
@@ -589,7 +589,7 @@ cur_paths.each_index{|i|
         puts "#{n.lat}, #{n.lon}"
       end
     }
-    
+
   end
 }
 
@@ -638,4 +638,3 @@ end
 
 #To put the important results from all traces into a file, do following:
 #tail -n 1 manual_pathing_(track_name).txt >> Results_Collection.txt
-

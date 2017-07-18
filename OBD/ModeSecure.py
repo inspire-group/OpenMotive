@@ -63,7 +63,9 @@ def tx_can1(message_data = [0x02, 0x01, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00]):
 
 # Manipulate data to stop information leakage
 def secure(data):
-    return shuffle(data)
+    shuffled = data[:]
+    shuffle(shuffled)
+    return shuffled
 
 # Start receiving requests and responses
 # on different threads

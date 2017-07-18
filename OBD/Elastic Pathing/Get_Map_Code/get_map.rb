@@ -35,9 +35,9 @@ end
 
 class WebData
 	include Singleton
-	#a container class that queries the web for data as needed. 
-	
-	
+	#a container class that queries the web for data as needed.
+
+
 	def initialize ()
 		@minlat = nil
 		@minlon = nil
@@ -51,7 +51,7 @@ class WebData
 
 	attr_reader :nodes, :ways, :minlat, :minlon, :maxlat, :maxlon
 
-	
+
 	def set_params(log,size)
 		#adjust chunk size for speed vs node count
 		@chunk_size = size
@@ -70,7 +70,7 @@ class WebData
 		@minlon = minlon
 		@maxlat = maxlat
 		@maxlon = maxlon
-		
+
 		#New internal storage structures (dumping the old ones by dropping context)
 		@nodes=Array.new()
 		@ways=Array.new()
@@ -78,11 +78,11 @@ class WebData
 
 		#get chunks
 		chunks = get_chunks(minlat,minlon,maxlat,maxlon)
-		raise "Too few chunks per thread" if OPTIONS[:threads] > chunks.length 
-		
+		raise "Too few chunks per thread" if OPTIONS[:threads] > chunks.length
+
 		#chop them up into separate arrays so that each thread can work on them
 		@log.debug("Total number of chunks #{chunks.length}")
-		
+
 		#create a attempt count
 		chunks.map!{|x| [x,0]}
 
@@ -100,7 +100,7 @@ class WebData
 			Thread.new {
 				@log.debug("Thread #{i} starting")
 				myfails = 0
-				until chunks.empty? do 
+				until chunks.empty? do
 					#perpetually go to sleep until the number of failures I knew about is more than the global number of failures
 					time = 0
 					lock.synchronize {
@@ -126,7 +126,7 @@ class WebData
 					@log.debug("Thread #{i}: attempt #{curchunk[1]}: myfails #{myfails}: working on #{curchunk[0][0]},#{curchunk[0][1]},#{curchunk[0][2]},#{curchunk[0][3]}")
 					begin
 						#if the chunk failure counter > 5, It's bad and the map is incomplete so give up
-            
+
 						if curchunk[1] > 5
 							@log.fatal("thread #{i}: #{curchunk[0][0]},#{curchunk[0][1]},#{curchunk[0][2]},#{curchunk[0][3]} failed too many times. Giving up")
 							abort
@@ -150,7 +150,7 @@ class WebData
 					rescue => e
 						#If a particular set failed, increment it's failure counter, and push it on the bottom of the stack
 						@log.warn("thread #{i}: Failures #{fails}:\n Problem processing XML, pushing #{curchunk[0][0]},#{curchunk[0][1]},#{curchunk[0][2]},#{curchunk[0][3]} back,\n ERROR:#{e.message}")
-						lock.synchronize{fails += 1; curchunk[1] += 1; chunks.unshift(curchunk)} 
+						lock.synchronize{fails += 1; curchunk[1] += 1; chunks.unshift(curchunk)}
 					end
 				end
 				@log.debug("thread #{i} completed")
@@ -192,7 +192,7 @@ class WebData
       end
       #If the road is one-way then the ordering of the nodes is
       #important and denotes node to node connectivity.
-     
+
 			wayness = x.scan(/k="oneway"\s*v=\"(.*?)\"/m)
 			wayness = "no" if wayness.empty?
       #-1 means that the nodes are not in order
@@ -234,7 +234,7 @@ class WebData
 
 		#returns an array of 4 coords that is the large box chopped into @chunk_size mile diagonal boxes
 		#Emprical test suggest 3 mile blocks seem to work ok, we will have to make a sloppy aproximation
-		
+
 		x1 = minlat
 		y1 = minlon
 		x2 = maxlat
@@ -246,9 +246,9 @@ class WebData
 
 		delx = (x1 - x2).abs
 		dely = (y1 - y2).abs
-	
-		#cumpute the factor brute force	
-		factor  = 2;	
+
+		#cumpute the factor brute force
+		factor  = 2;
 		cdist = Tools.latlondist(x1,y1,x2,y2)
 		while cdist > @chunk_size
 			xnew = x1 + delx / factor
@@ -279,7 +279,7 @@ class WebData
 			xbot += xoff
 		end
 
-		
+
 		return res
 	end
 
@@ -291,17 +291,17 @@ class WebData
 
 	def query(minlat,minlon,maxlat,maxlon)
 		#use the restclient to pull a partial map, the distance for the box size should be than 1 mile across
-	
+
 #		old api strings, The mapquest one is the least restrictive about large sets of down load queries
 		api_str = "http://api.openstreetmap.org/api/0.6/map?bbox="
 		#api_str = "http://www.informationfreeway.org/api/0.6/map?bbox="
 		#This is another format that works for OSM, seem to allow arbitrary sizes
     #http://open.mapquestapi.com/xapi/api/0.6/*[bbox=-74.4893,40.4237,-74.4359,40.4771]
 		#api_str = "https://www.mapquestapi.com/staticmap/v5/map?key=0rC54rYvfIyYGwAAf7AAN2kz89QAVJzK&boundingBox="
-   
+
 
 		#precision of round
-		
+
 		pre = 5
 
 #		the request URL as a strange ordering #{minlon},#{minlat},#{maxlon},#{maxlat}
@@ -315,7 +315,7 @@ class WebData
 			raise
 		end
 	end
-	
+
 	def to_osm(fname)
 		begin
 		#build the xml file by hand (infinitely faster than useing the library)
@@ -324,7 +324,7 @@ class WebData
 		file.puts("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
 		file.puts("<osm version=\"0.6\">")
 		file.puts(" <bounds minlat=\"#{@minlat}\" minlon=\"#{@minlon}\" maxlat=\"#{@maxlat}\" maxlon=\"#{@maxlon}\"/>")
-		
+
 		@nodes.each{|x| file.puts(" <node id=\"#{x[0]}\" lat=\"#{x[1]}\" lon=\"#{x[2]}\">\n  <tag />\n </node>")}
 		@ways.each{|x|
 			file.puts(" <way id=\"#{x[0]}\">")
@@ -366,7 +366,7 @@ class WebData
     #Each value before that index hold just 1 item, all items from
     #this index onwards are node ids
     node_idx = 5
-		
+
 		#add ways to DB
 		if db.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='ways';").empty?
 			@log.warn("Making a new WAYS table")
@@ -501,13 +501,13 @@ if __FILE__ == $0
 
 			#minlat
 			OPTIONS[:minlat] = "40.3718000".to_f
-			opts.on('-x','--minlat MINLAT','(Default = 40.277518) Minimum Latitude') do |minlat|
+			opts.on('-x','--minlat MINLAT','(Default = 40.3718000) Minimum Latitude') do |minlat|
 				OPTIONS[:minlat] = minlat.to_f
 			end
 
 			#minlon
 			OPTIONS[:minlon] = "-74.5975000".to_f
-			opts.on('-y','--minlon MINLON','(Default = -74.766477) Minimum Longitude') do |minlon|
+			opts.on('-y','--minlon MINLON','(Default = -74.5975000) Minimum Longitude') do |minlon|
 				OPTIONS[:minlon] = minlon.to_f
 			end
 
@@ -552,7 +552,7 @@ if __FILE__ == $0
 			opts.on('-t','--threads NUMBER','Number of threads, default 2') do |threads|
 				OPTIONS[:threads] = threads.to_i
 			end
-	
+
 			#Chunk size
 			OPTIONS[:chunk] = 5
 			opts.on('-c','--chunk NUMBER','Size of chunks defualt = 5') do |chunk|
@@ -569,11 +569,11 @@ if __FILE__ == $0
 		OPTIONS[:debug] ? LOG.level = Logger::DEBUG : LOG.level = Logger::INFO
 		LOG.debug("specfied options:\n#{OPTIONS.keys.inject(String.new()){|m,c| m + "key:#{c} value:#{OPTIONS.values_at(c)} \n"}}")
 		Tools.set_log(LOG)
-		
-		#bounding box check 
+
+		#bounding box check
 		bbox = [OPTIONS[:minlat],OPTIONS[:minlon],OPTIONS[:maxlat],OPTIONS[:maxlon]]
 		raise "Minlat should be smaller than Maxlat" if bbox[2] <= bbox[0]
-		raise "Minlon should be smaller than Maxlon" if bbox[3] <= bbox[1] 
+		raise "Minlon should be smaller than Maxlon" if bbox[3] <= bbox[1]
 		webdata = WebData.instance()
 		webdata.set_params(LOG,OPTIONS[:chunk])
 		webdata.update(bbox[0],bbox[1],bbox[2],bbox[3])
