@@ -1,23 +1,19 @@
-import sys
+import ModeStandard, ModeSecure, sys
 
-if len(sys.argv) < 2:
+def usage():
 	print('\n========================')
 	print('OBD USAGE')
 	print('========================\n')
 	print('python3 run.py mode')
 	print('        - mode: std or sec\n')
 	exit()
+
+if len(sys.argv) < 2: usage()
 mode = sys.argv[1]
 if mode == 'std':
 	print('\nMode Standard')
-	import ModeStandard
+	ModeStandard.main()
 elif mode == 'sec':
 	print('\nMode Secure')
-	import ModeSecure
-else:
-	print('\n========================')
-	print('OBD USAGE')
-	print('========================\n')
-	print('python3 run.py mode')
-	print('        - mode: std or sec\n')
-	exit()
+	ModeSecure.main()
+else: usage()

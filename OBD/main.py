@@ -1,12 +1,13 @@
 from guizero import App, ButtonGroup, PushButton, Text
+import ModeStandard, ModeSecure
 
 def start():
     if mode_button.get() == 'A':
         print("\nStandard Mode")
-        import ModeStandard
+        ModeStandard.main()
     else:
         print("\nSecure Mode")
-        import ModeSecure
+        ModeSecure.main()
 
 app = App(title = "OBD")
 

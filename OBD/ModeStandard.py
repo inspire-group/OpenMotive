@@ -58,24 +58,28 @@ def tx_can1(message_data = [0x02, 0x01, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00]):
     bus1.send(msg)
     time.sleep(0.05)
 
-# Start receiving requests and responses
-# on different threads
-requestQ = queue.Queue()
-responseQ = queue.Queue()
-rx0 = Thread(target=rx_can0)
-rx1 = Thread(target=rx_can1)
-rx0.start()
-rx1.start()
+# Run script
+def main():
+    # Start receiving requests and responses
+    # on different threads
+    requestQ = queue.Queue()
+    responseQ = queue.Queue()
+    rx0 = Thread(target=rx_can0)
+    rx1 = Thread(target=rx_can1)
+    rx0.start()
+    rx1.start()
 
-# Read from CAN1, request from CAN0,
-# then read from CAN0, transmit to CAN1
-try:
-    while True:
-        if not requestQ.empty():
-            request = requestQ.get()
-            tx_can0(request.data)
-            while responseQ.empty(): pass
-            response = responseQ.get()
-            tx_can1(response.data)
-            print(response.data)
-except KeyboardInterrupt: RUN = False
+    # Read from CAN1, request from CAN0,
+    # then read from CAN0, transmit to CAN1
+    try:
+        while True:
+            if not requestQ.empty():
+                request = requestQ.get()
+                tx_can0(request.data)
+                while responseQ.empty(): pass
+                response = responseQ.get()
+                tx_can1(response.data)
+                print(response.data)
+    except KeyboardInterrupt: RUN = False
+
+if __name__ == '__main__': main()

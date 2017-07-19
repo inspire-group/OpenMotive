@@ -67,25 +67,29 @@ def secure(data):
     shuffle(shuffled)
     return shuffled
 
-# Start receiving requests and responses
-# on different threads
-requestQ = queue.Queue()
-responseQ = queue.Queue()
-rx0 = Thread(target=rx_can0)
-rx1 = Thread(target=rx_can1)
-rx0.start()
-rx1.start()
+# Run script
+def main():
+    # Start receiving requests and responses
+    # on different threads
+    requestQ = queue.Queue()
+    responseQ = queue.Queue()
+    rx0 = Thread(target=rx_can0)
+    rx1 = Thread(target=rx_can1)
+    rx0.start()
+    rx1.start()
 
-# Read from CAN1, request from CAN0,
-# then read from CAN0, transmit to CAN1
-try:
-    start = time.time()
-    while True:
-        if not requestQ.empty():
-            request = requestQ.get()
-            tx_can0(request.data)
-        if (time.time() - start) % RESPONSE_INTERVAL == 0:
-            responses = []
-            while not responseQ.empty(): responses.append(responseQ.get())
-            for response in secure(responses): tx_can1(response.data)
-except KeyboardInterrupt: RUN = False
+    # Read from CAN1, request from CAN0,
+    # then read from CAN0, transmit to CAN1
+    try:
+        start = time.time()
+        while True:
+            if not requestQ.empty():
+                request = requestQ.get()
+                tx_can0(request.data)
+            if (time.time() - start) % RESPONSE_INTERVAL == 0:
+                responses = []
+                while not responseQ.empty(): responses.append(responseQ.get())
+                for response in secure(responses): tx_can1(response.data)
+    except KeyboardInterrupt: RUN = False
+
+    if __name__ == '__main__': main()
