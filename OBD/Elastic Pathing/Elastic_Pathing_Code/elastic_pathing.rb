@@ -194,7 +194,7 @@ speed_rundown = 0
   end
 }
 
-puts "Total time (ms) and distance (miles) are #{@total_time} and #{@total_distance}"
+#puts "Total time (ms) and distance (miles) are #{@total_time} and #{@total_distance}"
 avg_speed = speeds.inject(0.0){|avg, x| avg + x.speed / speeds.length.to_f}
 
 ################################################################################
@@ -256,11 +256,11 @@ speed_intervals.each_index{|i|
     if (5 > (speed_intervals[i-1].speed - speed_intervals[i].speed).abs)
       #Change the last time of current interval to the last time of the new interval
       labelled_intervals.last.stop = speed_intervals[i].stop
-      putlog "Adjusting interval with start and stop #{labelled_intervals.last.start} and #{labelled_intervals.last.stop}"
+      #putlog "Adjusting interval with start and stop #{labelled_intervals.last.start} and #{labelled_intervals.last.stop}"
     else
       #Add a new interval
       labelled_intervals.push speed_intervals[i]
-      putlog "Adding new interval with start and stop #{labelled_intervals.last.start} and #{labelled_intervals.last.stop}"
+      #putlog "Adding new interval with start and stop #{labelled_intervals.last.start} and #{labelled_intervals.last.stop}"
     end
   end
 }
@@ -272,20 +272,20 @@ speed_intervals.each_index{|i|
   SpeedInterval.new(first.stop, second.start, second.speed)
 }
 
-putlog "Intervals are:"
-speed_intervals.each{|x|
-  putlog "#{x}, (duration is #{(x.stop - x.start)/1000.0} seconds)"
-}
+#putlog "Intervals are:"
+#speed_intervals.each{|x|
+#  putlog "#{x}, (duration is #{(x.stop - x.start)/1000.0} seconds)"
+#}
 
-putlog "Labelled intervals are:"
-labelled_intervals.each{|x|
-  putlog "#{x}, (duration is #{(x.stop - x.start)/1000.0} seconds)"
-}
+#putlog "Labelled intervals are:"
+#labelled_intervals.each{|x|
+#  putlog "#{x}, (duration is #{(x.stop - x.start)/1000.0} seconds)"
+#}
 
-putlog "Change intervals are:"
-@change_intervals.each{|x|
-  putlog "#{x}, (duration is #{(x.stop - x.start)/1000.0} seconds)"
-}
+#putlog "Change intervals are:"
+#@change_intervals.each{|x|
+#  putlog "#{x}, (duration is #{(x.stop - x.start)/1000.0} seconds)"
+#}
 
 # Now correct the end of that path. Find the last stable interval and use that as
 # the endpoint. This should clip out maneuvering in parking lots and such.
@@ -320,7 +320,7 @@ end
 @arrival_times = {}
 def tooSlow(node, time)
   if (@arrival_times.has_key?([node.nid, node.wid]))
-    puts "Comparing time for #{node}: previously #{@arrival_times[[node.nid, node.wid]]}, now #{time}"
+    #puts "Comparing time for #{node}: previously #{@arrival_times[[node.nid, node.wid]]}, now #{time}"
     #Give 10 seconds plus 1.2 times previous best
     return (10000+1.2*@arrival_times[[node.nid, node.wid]] < time)
   else
@@ -377,20 +377,20 @@ if (has_path)
 elsif (has_firstnode)
   first_nid  = nil
   @path_data.execute("SELECT time, \"node id\" from firstnode;"){|r|
-    puts "Getting firstnode results: #{r}"
+    #puts "Getting firstnode results: #{r}"
     first_time = r[0].to_i
     first_nid = r[1].to_i
   }
   if (nil != first_nid)
-    puts "Assigning first node"
+    #puts "Assigning first node"
     first_node = navigator.nodeFromID(first_nid, speeds.first.time)
   end
-  puts "Firstnode is #{first_node}"
+  #puts "Firstnode is #{first_node}"
 end
 
 
 if (nil == first_node)
-  putlog "Error -- could not find a close starting node."
+  #putlog "Error -- could not find a close starting node."
   exit
 end
 
@@ -409,7 +409,7 @@ end
 # Distance from the first GPS coordinate to the first OSM point
 
 first_distance = haversine_mi(start_gps[0], start_gps[1], first_node.lat, first_node.lon)
-putlog "Starting from first node #{first_node} with wid #{first_node.wid}"
+#putlog "Starting from first node #{first_node} with wid #{first_node.wid}"
 
 # Start off with a single path
 
@@ -424,10 +424,10 @@ cur_paths = [Path.new(first_node)]
 @turn_active = false
 
 def notifyPathDrop(path, reason)
-  @logfile.putlog "Dropping dead path (#{reason})\nPath was #{path}."
-  path.path.each{|n|
-    @logfile.putlog "#{n.lat}, #{n.lon}"
-  }
+  #@logfile.putlog "Dropping dead path (#{reason})\nPath was #{path}."
+  #path.path.each{|n|
+    #@logfile.putlog "#{n.lat}, #{n.lon}"
+  #}
 end
 
 def makeNextPath(cur_path, node, move, err)
@@ -497,7 +497,7 @@ while (not partial_paths.empty? and
        (completed_paths.empty? or
           partial_paths.last.overall_err.abs < selection_ratio*completed_paths.first.overall_err.abs))
 
-  putlog "There are now #{partial_paths.length} partial paths and #{completed_paths.length} completed ones."
+  #putlog "There are now #{partial_paths.length} partial paths and #{completed_paths.length} completed ones."
 
   #Sort the paths by descending error
 
@@ -509,11 +509,11 @@ while (not partial_paths.empty? and
 
   if ((4*cur_best_distance/@total_distance).to_i > last_reported)
     last_reported = (4*cur_best_distance/@total_distance).to_i
-    printPlottable(((4*cur_best_distance/@total_distance).to_i)*0.25, partial_paths)
+    #printPlottable(((4*cur_best_distance/@total_distance).to_i)*0.25, partial_paths)
   end
 
-  putlog "Path choices are:"
-  partial_paths.map{|ep| putlog ep}
+  #putlog "Path choices are:"
+  #partial_paths.map{|ep| putlog ep}
 
   #Advance the best path until its error changes
   #Since this path will branch, remove the parent path first.
@@ -537,8 +537,8 @@ while (not partial_paths.empty? and
        get_speed(best_path.path.last.wid,navigator)[1]+exceeding_max_speed< speeding and
         20 < get_speed(best_path.path.last.wid, navigator)[1])
 
-           putlog "way too fast, going #{speeding} but limit is #{get_speed(best_path.path.last.wid,navigator)[1]}"
-           puts "way too fast, going #{speeding} but limit is #{get_speed(best_path.path.last.wid,navigator)[1]}"
+           #putlog "way too fast, going #{speeding} but limit is #{get_speed(best_path.path.last.wid,navigator)[1]}"
+           #puts "way too fast, going #{speeding} but limit is #{get_speed(best_path.path.last.wid,navigator)[1]}"
   else
 
     # Advance the best path and store the newly explored paths to the corresponding group.
@@ -558,58 +558,58 @@ end
 
 # Print out all the paths
 
-printPlottable(1.0, partial_paths + completed_paths)
-putlog "Finished... partial paths has #{partial_paths.length} elements"
+#printPlottable(1.0, partial_paths + completed_paths)
+#putlog "Finished... partial paths has #{partial_paths.length} elements"
 cur_paths = completed_paths
 
-putlog "Pathing complete."
-putlog "There are #{cur_paths.length} remaining paths!"
-putlog "Error #{cur_paths.first.overall_err}"
+#putlog "Pathing complete."
+#putlog "There are #{cur_paths.length} remaining paths!"
+#putlog "Error #{cur_paths.first.overall_err}"
 end_lat = end_gps[0]
 end_lon = end_gps[1]
 end_node = Node.new(0, end_lat, end_lon, 0)
 
-# Sort by ascending error
-# Print out the best possible path from Elastic Pathing algorithm
+#Sort by ascending error
+#Print out the best possible path from Elastic Pathing algorithm
 
 cur_paths.sort!{|x,y| x.overall_err.abs <=> y.overall_err.abs}
-  puts "best path:"
+  #puts "best path:"
 cur_paths.each_index{|i|
   path = cur_paths[i]
-  putlog "Path #{i} is #{path}"
+  #putlog "Path #{i} is #{path}"
   if (nil != path)
-    putlog "Dist is #{path.path.last.distance(end_node)} miles (after moving #{@total_distance} miles) ending at (#{path.path[-1].lat}, #{path.path[-1].lon})"
+    #putlog "Dist is #{path.path.last.distance(end_node)} miles (after moving #{@total_distance} miles) ending at (#{path.path[-1].lat}, #{path.path[-1].lon})"
     if (i==0)
-      @strinNew = "Dist is #{path.path.last.distance(end_node)} miles (after moving #{@total_distance} miles) ending at (#{path.path[-1].lat}, #{path.path[-1].lon})"
+      @strinNew = "#{path.path.last.distance(end_node)} #{@total_distance}"
       end
-    putlog "Path coordinates were:"
-    path.path.each{|n|
-      putlog "FinalPath #{i} #{n.lat}, #{n.lon}"
-      if (i==0)
-        puts "#{n.lat}, #{n.lon}"
-      end
-    }
+    #putlog "Path coordinates were:"
+    #path.path.each{|n|
+      #putlog "FinalPath #{i} #{n.lat}, #{n.lon}"
+      #if (i==0)
+        #puts "#{n.lat}, #{n.lon}"
+      #end
+    #}
 
   end
 }
 
-putlog "Expected end point is (#{end_gps[0]}, #{end_gps[1]})"
+#putlog "Expected end point is (#{end_gps[0]}, #{end_gps[1]})"
 
 # Print out the ground truth path with the actual GPS trace.
 
 gps_trace = gps_trace.drop_while{|s| s[0] < first_time}
-  puts "GPSTrace"
-gps_trace.each{|triple|
-  putlog "GPSTrace #{triple[0]} #{triple[1]}, #{triple[2]}"
-  puts "#{triple[1]}, #{triple[2]}"
-}
+  #puts "GPSTrace"
+#gps_trace.each{|triple|
+  #putlog "GPSTrace #{triple[0]} #{triple[1]}, #{triple[2]}"
+  #puts "#{triple[1]}, #{triple[2]}"
+#}
 
 puts @strinNew
 
 #Extract important results to the last line.
 
-putlog "Track Name, Total Distance, Endpoint Error, Overall error...all in miles"
-putlog "#{ARGV[0].split("/")[-1].split(".")[0]}, #{@total_distance}, #{cur_paths.first.path.last.distance(end_node)}, #{cur_paths.first.overall_err}"
+#putlog "Track Name, Total Distance, Endpoint Error, Overall error...all in miles"
+#putlog "#{ARGV[0].split("/")[-1].split(".")[0]}, #{@total_distance}, #{cur_paths.first.path.last.distance(end_node)}, #{cur_paths.first.overall_err}"
 @logfile.close
 
 #Copy the info into the final file if the solution with this particular set of parameters is better than before (overall_err is less than minimum error).

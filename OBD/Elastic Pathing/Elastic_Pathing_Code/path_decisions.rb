@@ -130,7 +130,7 @@ def haversine_mi(node_a, node_b)
   a = Math.sin(dlat/2.0)**2 + Math.cos(lat1*@d2r) * Math.cos(lat2*@d2r) * Math.sin(dlon/2.0)**2;
   c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
   #Multiply by the radius of the earth (in miles here)
-  return 3956 * c; 
+  return 3956 * c;
 end
 
 
@@ -210,7 +210,7 @@ def advanceAError(epath, turn_radius, new_node, logfile)
   sample_distance = epath.speed_samples[epath.lastLandmarkTime,epath.time_index].inject(0.0){|sum,sample|
     sum += sample.movement
   }
-  logfile.puts "advanceAError: advancing from time index #{initial_t_index} to #{epath.time_index} changing initial distance from #{epath.segment_dist} to #{sample_distance}"
+  #logfile.puts "advanceAError: advancing from time index #{initial_t_index} to #{epath.time_index} changing initial distance from #{epath.segment_dist} to #{sample_distance}"
   #Set the landmark at the current time given this compression factor
   #This should be less than one since we needed to use more samples in the same time
   epath.setLandmark(epath.segment_dist/sample_distance)
@@ -320,4 +320,3 @@ def turnAngle(prev, cur, nex)
     return angle
   end
 end
-

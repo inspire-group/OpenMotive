@@ -1,6 +1,6 @@
 #!/usr/bin/ruby
-#This was the first library. It's meant to serve and an interface to the database. The Nodes and ways object can be instatied with 
-#a DB object and all the methods used to manipluate maps. 
+#This was the first library. It's meant to serve and an interface to the database. The Nodes and ways object can be instatied with
+#a DB object and all the methods used to manipluate maps.
 #Run as a standalone it returns the closest node to the center and the ways that contain it for map testing purposes
 
 
@@ -37,14 +37,14 @@ class Node_Buffer
 		@nodes_buff += nodes
 		buff_max = @nodes_buff.map{|x| x[0]}.max
 		@maxnid = buff_max if @maxnid < buff_max
-		@log.debug("node_buffer: added #{nodes.length} to the buffer from trace db")
-	end		
+		##@log.debug("node_buffer: added #{nodes.length} to the buffer from trace db")
+	end
 
 	def add_node(lat,lon)
 		#lat,lon are floats. Adds a node to the list of known nodes. Does NOT modify the Database.
 		@maxnid += 1
 		@nodes_buff.push([@maxnid,lat,lon])
-		@log.debug("add_node: NID max is now #{@maxnid}, there are now #{@nodes_buff.length} nodes in the buffer")
+		##@log.debug("add_node: NID max is now #{@maxnid}, there are now #{@nodes_buff.length} nodes in the buffer")
 		return @maxnid
 	end
 
@@ -61,10 +61,10 @@ class Node_Buffer
 	end
 
 	def get_dist_arr(lat,lon)
-		#lat/lon are two floats, returns an array of nid,distance. 
+		#lat/lon are two floats, returns an array of nid,distance.
 		return @nodes_buff.map{|x| [x[0],Tools.latlondist(lat,lon,x[1],x[2])]}
 	end
-	
+
 	def get_id(lat,lon)
 		#lat and lon are floats, returns the id of a node that matches
 		tmp = @node_bug.select{|x| x[1] == lat and x[2] == lon}.first
@@ -92,14 +92,14 @@ class Node_SQL
     @log = log
     count = nil
     db.execute("SELECT COUNT(id) from nodes;"){|r| count = r['COUNT(id)']}
-    @log.info("Node_SQL:Number of nodes in the map DB #{count}")
-    @db.execute("SELECT latitude,longitude FROM bounds WHERE name = 'min';"){|r| 
-      @minlon = r['longitude'].to_f 
-      @minlat = r['latitude'].to_f 
+    ###@log.info("Node_SQL:Number of nodes in the map DB #{count}")
+    @db.execute("SELECT latitude,longitude FROM bounds WHERE name = 'min';"){|r|
+      @minlon = r['longitude'].to_f
+      @minlat = r['latitude'].to_f
     }
-    @db.execute("SELECT latitude,longitude FROM bounds WHERE name = 'max';"){|r| 
-      @maxlon = r['longitude'].to_f 
-      @maxlat = r['latitude'].to_f 
+    @db.execute("SELECT latitude,longitude FROM bounds WHERE name = 'max';"){|r|
+      @maxlon = r['longitude'].to_f
+      @maxlat = r['latitude'].to_f
     }
     @db.execute("SELECT MAX(id) FROM nodes;"){|r|
       @maxnid = r['MAX(id)'].to_i
@@ -120,24 +120,24 @@ class Node_SQL
 		#added internal function so that we only have to do 1 lookup, but preserved the interface
 		lat = nil
 		lon = nil
-    @lat_lon_query.execute!(id) {|r| 
+    @lat_lon_query.execute!(id) {|r|
       lat = r[0].to_f
       lon = r[1].to_f
 		}
-		#@log.debug("#{lat},#{lon} was the lat for current #{id}")
+		###@log.debug("#{lat},#{lon} was the lat for current #{id}")
 		@cur_node = [id,lat,lon]
 		raise "No lat,lon found for nid#{id}" if lat.nil? or lon.nil?
 		return true
 	end
-	
+
 
 	def get_lat(id)
 		#id is an integer
 		update_curnode(id) if @cur_node[0] != id
 		return @cur_node[1]
 	end
-	
-	def get_lon(id)	
+
+	def get_lon(id)
 		#id is an integer
 		update_curnode(id) if @cur_node[0] != id
 		return @cur_node[2]
@@ -147,14 +147,14 @@ class Node_SQL
 		#lat and lon are floats
 		id = nil
 		@id_query.execute!(lat,lon){|r| id = r[0].to_i}
-		@log.debug("#{id} mapped to #{lat},#{lon}")
+		##@log.debug("#{id} mapped to #{lat},#{lon}")
 		raise "No id found for lat #{lat},lon #{lon}" if id.nil?
 		return id
 	end
 
   def get_adjacent_arr(nid)
     result = []
-    puts "Nid is #{nid}"
+    #puts "Nid is #{nid}"
     @db.execute("SELECT wid, to_nid FROM adjacencies WHERE from_nid = #{nid};"){|r|
       result.push(r['to_nid'].to_i)
     }
@@ -165,25 +165,25 @@ class Node_SQL
 		#lat and lon are floats
 		#Returns an array of nodes,distances ordered by distance
 		retries =  1
-		begin 
+		begin
 			#find a big bounding box
 			ulat = lat.abs + box
 			ulon = -(lon.abs - box)
 			llat = lat.abs - box
 			llon = -(lon.abs + box)
 			dist = Tools.latlondist(ulat,ulon,llat,llon)
-			@log.debug("Attempt #{retries}: Box was set to #{dist} with borders #{ulat},#{ulon},#{llat},#{llon}")
-	
+			##@log.debug("Attempt #{retries}: Box was set to #{dist} with borders #{ulat},#{ulon},#{llat},#{llon}")
+
 			near = Array.new()
-			@db.execute("SELECT id,latitude,longitude FROM nodes WHERE latitude BETWEEN #{llat} AND #{ulat} AND longitude BETWEEN #{llon} AND #{ulon};"){|r| 
+			@db.execute("SELECT id,latitude,longitude FROM nodes WHERE latitude BETWEEN #{llat} AND #{ulat} AND longitude BETWEEN #{llon} AND #{ulon};"){|r|
 				near.push([r['id'].to_i,r['latitude'].to_f,r['longitude'].to_f])
 			}
-			@log.debug("number of near points #{near.length}")
+			##@log.debug("number of near points #{near.length}")
 			raise NoNodesInTolerance, "Can't find any points within the tolerance" if near.empty?
 		rescue NoNodesInTolerance => e
 			box += 0.005
 			retry if (retries += 1) < 3
-			@log.warn("Node_SQL.get_dist_arr: No nodes found within tolerance in the Database")
+			##@log.warn("Node_SQL.get_dist_arr: No nodes found within tolerance in the Database")
 			return near
 		end
 
@@ -192,7 +192,7 @@ class Node_SQL
 
 	def to_s()
 		#this should be find because it's all strings
-		return @db.execute("SELECT id FROM nodes;").flatten.inject(String.new()){|m,s| m + "#{s},"} 
+		return @db.execute("SELECT id FROM nodes;").flatten.inject(String.new()){|m,s| m + "#{s},"}
 	end
 
 end
@@ -241,7 +241,7 @@ class Nodes
   end
 
 	def get_nearest_arr(lat,lon)
-		#lat/lon are floats. check the map and buffer for nodes close to the given lat/lon returns and ordered list tuple of lat/lon/distance 
+		#lat/lon are floats. check the map and buffer for nodes close to the given lat/lon returns and ordered list tuple of lat/lon/distance
 		buffer = @node_buffer.get_dist_arr(lat,lon)
 		sql = @node_sql.get_dist_arr(lat,lon)
 		near = buffer + sql
@@ -256,14 +256,14 @@ class Nodes
 	end
 
 	def get_id(lat,lon)
-		#lat and lon are floats, check to see if a given lat/lon pair is an exact match for a given node. Returns the nid if found. 
+		#lat and lon are floats, check to see if a given lat/lon pair is an exact match for a given node. Returns the nid if found.
 		tmp_id = @node_buffer.get_id(lat,lon)
 		return tmp_id unless tmp_id.nil?
 		return @node_sql.get_id(lat,lon)
 	end
 
 	def dump_buffer()
-		#returns an array of nid/lat/lon tuples that is the contents of the node buffer. 
+		#returns an array of nid/lat/lon tuples that is the contents of the node buffer.
 		return @node_buffer.dump_buffer()
 	end
 
@@ -289,21 +289,21 @@ class Way_Buffer
 		@way_buff += ways
 		buff_max = @way_buff.map{|x| x[0]}.max
 		@maxwid = buff_max if @maxwid < buff_max
-		@log.debug("Way_buffer: added #{ways.length} to the buffer from trace db")
+		##@log.debug("Way_buffer: added #{ways.length} to the buffer from trace db")
 	end
 
 	def add_new_wid(nodelist)
 		#nodelist is an array of interger node ids. Adds a way to the list of known ways. Does NOT modify the Database.
 		@maxwid += 1
 		@way_buff.push([@maxwid,nodelist])
-		@log.debug("add_new_wid: WID max is now #{@maxwid}, there are now #{@way_buff.length} ways in the buffer")
+		##@log.debug("add_new_wid: WID max is now #{@maxwid}, there are now #{@way_buff.length} ways in the buffer")
 		return @maxwid
 	end
 
 	def add_mod_wid(nodelist,wid)
 		#nodelist is an array of interger node ids. wid is a known way id that is being modified. Adds a way to the list of known ways. Does NOT modify the Database.
 		@way_buff.push([wid,nodelist])
-		@log.debug("add_new_wid: added modified way #{wid}, there are now #{@way_buff.length} ways in the buffer")
+		##@log.debug("add_new_wid: added modified way #{wid}, there are now #{@way_buff.length} ways in the buffer")
 		return wid
 	end
 
@@ -346,7 +346,7 @@ end
 
 class Way_SQL
 		attr_reader :maxwid
-	#Way SQL interface. Queries the Database for various Way information 
+	#Way SQL interface. Queries the Database for various Way information
 	def initialize (db,log)
 		#db is a sql database object (properly SQLite3::Database.new(dbname), log is a logger object Logger.new(STDOUT)
 		@db = db
@@ -354,7 +354,7 @@ class Way_SQL
 		@log = log
 		wids = Array.new()
 		@db.execute("SELECT DISTINCT wid FROM ways;"){|r| wids.push(r['wid'].to_i)}
-		@log.info("Number of ways #{wids.length}")
+		###@log.info("Number of ways #{wids.length}")
 		@maxwid = wids.max
 		@wids_query = @db.prepare("SELECT DISTINCT wid FROM ways;")
 		@contain_query = @db.prepare("SELECT wid FROM ways WHERE nid = ? AND NOT type = 'NotHighWay' ;")
@@ -389,11 +389,11 @@ class Way_SQL
 
 
 	def get_nids(wid)
-		#wid is an integer 
+		#wid is an integer
 		#returns an array of nids contained in the given wid
 		nids = Array.new()
 		@nids_query.execute!(wid){|r| nids.push(r[0].to_i)}
-		@log.debug("Way #{wid} contains #{nids.length} nodes")
+		##@log.debug("Way #{wid} contains #{nids.length} nodes")
 		raise "No nodes found" if nids.empty?
 		return nids
 	end
@@ -402,7 +402,7 @@ class Way_SQL
 		#id is an integer
 		return get_nids(id)
 	end
-	
+
 	def get_name(id)
 		#id is an integer
 		name = nil
@@ -420,13 +420,13 @@ class Way_SQL
 	end
 
 	def to_s()
-		return @db.execute("SELECT DISTINCT name FROM ways;").flatten.inject(String.new()){|m,s| m + "#{s},"} 
+		return @db.execute("SELECT DISTINCT name FROM ways;").flatten.inject(String.new()){|m,s| m + "#{s},"}
 	end
 end
 
 class Ways
 	#A container class for the Way_sql and Way_buffer class
-	#This class unifies the interface and checks the buffer before the sql. 
+	#This class unifies the interface and checks the buffer before the sql.
 	def initialize (db,log)
 		#db is a sql database object (properly SQLite3::Database.new(dbname), log is a logger object Logger.new(STDOUT)
 		@way_sql = Way_SQL.new(db,log)
@@ -467,7 +467,7 @@ class Ways
 	end
 
 	def get_nids(wid)
-		#wid is an integer. here we want to give preference to bufferd values over sql values 
+		#wid is an integer. here we want to give preference to bufferd values over sql values
 		tmp = @way_buffer.get_nids(wid)
 		return tmp unless tmp.empty?
 		return @way_sql.get_nids(wid)
@@ -487,7 +487,7 @@ class Ways
 
 	def get_type(id)
 		#id is an integer. if there was a type recorded for that id, return that (it shouldn't have changed). If not but the way was added return "ADD", other wise return nil.
-		#the speed value will have to be interpolated from connecting ways. 
+		#the speed value will have to be interpolated from connecting ways.
 		tmp = @way_sql.get_type(id)
 		if tmp
 			return tmp
@@ -513,10 +513,10 @@ class Ways
 		tmp = Array.new()
 		tdb.results_as_hash = true unless tdb.results_as_hash
 		tdb.execute("SELECT * FROM gways"){|r| tmp.push([r['wid'].to_i,r['nid'].to_i])}
-		@log.debug("Ways.fill_buffer: extracted\n#{tmp.map{|x| x.join(",")}.join("\n")}")
+		##@log.debug("Ways.fill_buffer: extracted\n#{tmp.map{|x| x.join(",")}.join("\n")}")
 		wids = tmp.map{|x| x[0]}.uniq
 		fill = wids.map{|x| [x,tmp.select{|y| y[0] == x}.map{|y| y[1]}]}
-		@log.debug("Ways.fill_buffer: pushing\n#{fill.map{|x| x.join(",")}.join("\n")}")
+		##@log.debug("Ways.fill_buffer: pushing\n#{fill.map{|x| x.join(",")}.join("\n")}")
 		@way_buffer.fill_buffer(fill)
 	end
 end
@@ -548,7 +548,7 @@ if __FILE__ == $0
 			opts.on('-d','--debug','Enable Debug messages (default: false)') do
 				OPTIONS[:debug] = true
 			end
-		
+
 			#DB to read from
 			OPTIONS[:dbfile] = nil
 			opts.on('-D','--dbfile FILE','PATH to READ databse file from') do |file|
@@ -560,10 +560,10 @@ if __FILE__ == $0
 			opts.on('-T','--trace FILE','PATH to READ trace databse file from') do |file|
 				OPTIONS[:tdbfile] = file
 			end
-	
+
 			#help message
 			opts.on( '-h', '--help', 'Display this screen' ) do
-				puts opts
+				#puts opts
 				exit
 			end
 		end
@@ -579,8 +579,8 @@ if __FILE__ == $0
 		unless OPTIONS[:tdbfile].nil?
 			LOG.info("Main:Opening #{OPTIONS[:tdbfile]}")
 			tdb = SQLite3::Database.new(OPTIONS[:tdbfile])
-			nodes.fill_buffer(tdb) 
-			ways.fill_buffer(tdb) 
+			nodes.fill_buffer(tdb)
+			ways.fill_buffer(tdb)
 		end
 
 		new_node_1 = nodes.add_node(40.10,-71.023)
@@ -605,14 +605,14 @@ if __FILE__ == $0
 		nearest = nil
 		wids = nil
 
-		# The nearest node that contains a way. This is above the context of nodes and ways so it should properly be done in code that lives above them 
+		# The nearest node that contains a way. This is above the context of nodes and ways so it should properly be done in code that lives above them
 		nodes.get_nearest_arr(cenlat,cenlon).each{|n|
 			nearest = n[0]
 			wids = ways.wids_contain(n[0])
 			break unless wids.empty?
 		}
-		
-		
+
+
 		LOG.info("Main:Test results:")
 		LOG.info("Main:Nearest to center #{nearest} @ #{nodes.get_lat(nearest)},#{nodes.get_lon(nearest)}")
 		LOG.info("Main:Containing Wids: There are #{wids.length} wids, they are")
@@ -632,4 +632,3 @@ if __FILE__ == $0
 		LOG.close
 	end
 end
-

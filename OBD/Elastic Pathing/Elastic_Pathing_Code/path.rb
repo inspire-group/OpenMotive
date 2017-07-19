@@ -7,13 +7,13 @@ require './path_decisions'
 #Haversine distance in miles (used to find actual distances between GSP coordinates)
 def haversine_mi(lat1, lon1, lat2, lon2)
   @d2r = Math::PI / 180.0
-  
+
   dlon = (lon2 - lon1) * @d2r;
   dlat = (lat2 - lat1) * @d2r;
   a = Math.sin(dlat/2.0)**2 + Math.cos(lat1*@d2r) * Math.cos(lat2*@d2r) * Math.sin(dlon/2.0)**2;
   c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
   #Multiply by the radius of the earth (in miles here)
-  return 3956 * c; 
+  return 3956 * c;
 end
 
 #Node from open street maps. Have node id, latitude, longitude, and way ID.
@@ -98,7 +98,7 @@ class Path
       #@can_turn = NO_TURN
     #end
     @progress = -1 * node.distance(path[-1])
-    puts "Starting progress to new node (#{node.nid}) -- distance is #{@progress}"
+    #puts "Starting progress to new node (#{node.nid}) -- distance is #{@progress}"
     @path.push(node)
     if (not @hash_path.has_key? node.nid)
       @hash_path[node.nid] = []
@@ -126,7 +126,7 @@ class Path
     copy.path = self.path.map{|x| x}
     copy.hash_path = self.hash_path.clone
     #copy.unique_id = @@path_id += 1
-    puts "DEBUG: Just cloned and distance is #{copy.progress}"
+    #puts "DEBUG: Just cloned and distance is #{copy.progress}"
     copy
   end
 
@@ -137,5 +137,3 @@ class Path
       path.join("\n")
   end
 end
-
-

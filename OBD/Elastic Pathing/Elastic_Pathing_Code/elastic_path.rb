@@ -117,13 +117,13 @@ class ElasticPath
   #Advance along the samples until a Type A or B error occurs or the path diverges
   def advanceUntilBranch()
     while (@time_index < @speed_samples.length)
-      putlog "Advancing path #{@unique_id}. Starting at index #{@time_index} of #{@speed_samples.length}"
+      #putlog "Advancing path #{@unique_id}. Starting at index #{@time_index} of #{@speed_samples.length}"
       #If speed is 0 or near 0, we should be close to an
       #intersection or a Type B error occurs.
       #The following two parameters 0.8 mph and 1 mph are all experimental values.
       #This set of parameters generally work well on filtering out speed samples near 0.
       if (@speed_samples[@time_index].speed < 0.8)
-        putlog "Zooming through low speed section"
+        #putlog "Zooming through low speed section"
         while (@time_index < @speed_samples.length and
                @speed_samples[@time_index].speed < 1)
           @time_index += 1
@@ -148,12 +148,12 @@ class ElasticPath
         end
         else
           #Pathing finished here
-          putlog "Path finished while going through low speed section."
+          #putlog "Path finished while going through low speed section."
           return [self]
     end
   end
 
-      putlog "Progressing normally"
+      #putlog "Progressing normally"
       #Advance the path here.
       sample = @speed_samples[@time_index]
       @progress += sample.movement
@@ -167,13 +167,13 @@ class ElasticPath
 
       #Choose a next location if the next node is reached
       if (0 < @progress)
-        putlog "Reached a new node with id #{@path.last.nid} and coordinates #{@path.last.lat},#{@path.last.lon}"
+        #putlog "Reached a new node with id #{@path.last.nid} and coordinates #{@path.last.lat},#{@path.last.lon}"
         #In here, we do not consider the case when the U-turn passes through the same node as current node.
-        #For most U-turn in the highway, the U-turn usually passes through a new node in the other side of the 
+        #For most U-turn in the highway, the U-turn usually passes through a new node in the other side of the
         #highway having the  opposite direction. However, there do exist some intersections with U-turn coming back to
         #the original node since not all the nodes in the OSM are well recorded and connected in the same way.
         next_nodes = @@navigator.possibleTurns(self)
-      
+
         #following if statement is to fix the nil way ID for first node of the path.
         if ((@path.length==1)&&(@path.last.wid==nil))
           @path.last.wid=next_nodes.last.wid
@@ -187,7 +187,7 @@ class ElasticPath
         new_paths = []
         #Lanes of the current road
         start_lanes = @@navigator.lanes(@path.last.wid)
-        putlog "Path #{@unique_id} reaches next node with #{next_nodes.length} choices"
+        #putlog "Path #{@unique_id} reaches next node with #{next_nodes.length} choices"
         turn_idx = 0
         next_nodes.each{|node|
           #If this is the only option or the way is the same then this is the simple case
@@ -204,9 +204,9 @@ class ElasticPath
           step_distance = @path.last.distance node
           r = turnRadius(start_lanes, new_lanes, way_changes, turn_angle, step_distance, prev_step_distance)
           safe_r = safeTurnRadius(sample.speed)
-          putlog "Choice #{turn_idx}: ways are #{@path.last.wid} and #{node.wid} " +
-           "(#{@@navigator.getWayname(@path.last.wid)} and #{@@navigator.getWayname(node.wid)}, " +
-           "turn angle is #{turn_angle}, turn radius is #{r} and safe radius at speed #{sample.speed} is #{safe_r}"
+          #putlog "Choice #{turn_idx}: ways are #{@path.last.wid} and #{node.wid} " +
+          # "(#{@@navigator.getWayname(@path.last.wid)} and #{@@navigator.getWayname(node.wid)}, " +
+          # "turn angle is #{turn_angle}, turn radius is #{r} and safe radius at speed #{sample.speed} is #{safe_r}"
           if (1 < @path.length and r < safe_r)
             #There might be an error of around 3 mph, so try again with that
             if (r < safeTurnRadius(sample.speed - 3))
@@ -216,16 +216,16 @@ class ElasticPath
               if (0 < segment_dist)
                 new_paths.push rewindAError(self.clone, r, node)
                 if (nil != new_paths.last)
-                  if (new_paths.last.overall_err.nan?)
-                    putlog "nan after rewind A"
-                  end
+                  #if (new_paths.last.overall_err.nan?)
+                  #  putlog "nan after rewind A"
+                  #end
                   new_paths.last.unique_id += "#{turn_idx}R"
                 end
                 new_paths.push advanceAError(self.clone, r, node, @@logfile)
                 if (nil != new_paths.last)
-                  if (new_paths.last.overall_err.nan?)
-                    putlog "nan after advance A"
-                  end
+                  #if (new_paths.last.overall_err.nan?)
+                  #  putlog "nan after advance A"
+                  #end
                   new_paths.last.unique_id += "#{turn_idx}A"
                 end
               end
@@ -251,7 +251,7 @@ class ElasticPath
       #No branch, go on to the next point
 end
     #If there are no more samples then this path is complete
-    putlog "Path finished: no more samples"
+    #putlog "Path finished: no more samples"
     return [self]
 end
 
@@ -259,14 +259,14 @@ end
     #New distance to next node is the distance past this one plus the distance
     #to the new node from the one we are currently passing
     @progress = @progress + -1 * node.distance(path[-1])
-    putlog "Starting progress to new node (#{node.nid}) -- distance is #{@progress}"
+    #putlog "Starting progress to new node (#{node.nid}) -- distance is #{@progress}"
     @path.push(node)
     if (not @hash_path.has_key? node.nid)
       @hash_path[node.nid] = []
     end
     @hash_path[node.nid].push node.wid
   end
-  
+
   #Get the last two points, or last 1 if the path is too small
   def lastTwo()
     return [path[-2], path[-1]]
@@ -294,5 +294,3 @@ end
       "overall/seq/max errors are #{@overall_err}/#{@seq_err}/#{@max_err})"
   end
 end
-
-
