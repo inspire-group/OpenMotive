@@ -1,4 +1,4 @@
-# Vehicle Transmission Sports and Efficiency Modes Upgrade
+# Vehicle Transmission Sports and Efficiency Modes Application
 
 This program provides the user with knowledge about the optimal Engine RPMs at which
 the vehicle must switch gears for maximum acceleration (Sports Mode) and at which the

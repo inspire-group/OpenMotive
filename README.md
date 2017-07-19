@@ -14,7 +14,7 @@ This program relays information from the vehicle OBDII port to any OBDII device 
 - Standard: relay the information from the vehicle exactly as it was received.
 - Secure: use data shuffling to stop private information leakage while keeping any OBDII device fully functional.
 
-## Vehicle Transmission Sports and Efficiency Modes Upgrade
+## Vehicle Transmission Sports and Efficiency Modes Application
 
 This program provides the user with knowledge about the optimal Engine RPMs at which
 the vehicle must switch gears for maximum acceleration (Sports Mode) and at which the
