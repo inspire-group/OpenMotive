@@ -4,8 +4,10 @@ import ModeSports, ModeEfficiency
 def start():
     if mode_button.get() == 'A' and type_button.get() == 'A':
         print('\nSports Mode - Training')
+        ModeSports.main(mode='train')
     elif mode_button.get() == 'A' and type_button.get() == 'B':
         print('\nSports Mode - Testing')
+        ModeSports.main(mode='test')
     elif mode_button.get() == 'B' and type_button.get() == 'A':
         print('\nEfficiency Mode - Training')
     elif mode_button.get() == 'B' and type_button.get() == 'B':

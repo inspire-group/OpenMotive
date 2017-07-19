@@ -14,8 +14,10 @@ mode = sys.argv[1]
 phase = sys.argv[2]
 if mode == 'spo' and phase == 'train':
     print('\nSports Mode - Training')
+    ModeSports.main(mode='train')
 elif mode == 'spo' and phase == 'test':
     print('\nSports Mode - Testing')
+    ModeSports.main(mode='test')
 elif mode == 'eff' and phase == 'train':
     print('\nEfficiency Mode - Training')
 elif mode == 'eff' and phase == 'test':
