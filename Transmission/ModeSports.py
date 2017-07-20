@@ -1,6 +1,6 @@
 # Import dependencies
 from threading import Thread
-import can, numpy as np, os, queue, requests, time
+import can, numpy as np, os, requests, time
 
 # Golden Ratio
 PHI = (math.sqrt(5)+1)/2
