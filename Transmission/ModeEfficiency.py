@@ -50,14 +50,28 @@ def mpg(speed, maf): return speed*7.718/maf
 
 # Get Vehicle Identification Number
 def vin():
-    msg = can.Message(arbitraion_id=PID_REQUEST, data=[0x02, 0x09, PID_VIN,\
-    0x00, 0x00, 0x00, 0x00, 0x00], extended_id=False)
-    bus.send(msg)
+    vin_data = []
+    vin_size = 0
+    vin_request = can.Message(arbitration_id=PID_REQUEST, data=[0x02, 0x09,\
+    PID_VIN, 0x00, 0x00, 0x00, 0x00, 0x00], extended_id=False)
+    bus.send(vin_request)
     time.sleep(0.05)
     while True:
-        request = bus.recv()
-        if request.arbitration_id == PID_REPLY and int(request.data[1]) == 0x09\
-        and int(request.data[2], 16) == 0x02: return request.data[3:]
+        response = bus.recv()
+        if response.arbitration_id == PID_REPLY and response.data[0] >> 4 == 1:
+            vin_size = ((response.data[0] & 0x0F) << 8) | response.data[1]
+            vin_data.extend(response.data[2:])
+            flow_id = response.arbitration_id - 0x08
+            flow_control_request = can.Message(arbitration_id=flow_id,\
+            data=[0x30, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],\
+            extended_id=False)
+            bus.send(flow_control_request)
+            time.sleep(0.05)
+        if response.arbitration_id == PID_REPLY and response.data[0] >> 4 == 2:
+            vin_data.extend(response.data[1:])
+        if len(vin_data) == vin_size:
+            vin_data = vin_data[vin_size-17:]
+            return ''.join(chr(i) for i in vin_data)
 
 # Get Engine RPM and speed values from Vehicle
 def get_values():
