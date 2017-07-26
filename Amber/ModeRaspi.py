@@ -30,7 +30,7 @@ class ModeRaspi(object):
             format = "bgr", use_video_port = True):
                 if cv2.waitKey(1) & 0xFF == ord("q"): break
                 if not self.lp: break
-                #cv2.imshow("Raspberry Pi Mode", frame.array)
+                cv2.imshow("Raspberry Pi Mode", frame.array)
                 cv2.imwrite("mode_raspi.jpg", frame.array)
                 results = json.loads(os.popen('alpr -j mode_raspi.jpg').read())
                 i = 0
@@ -64,7 +64,7 @@ class ModeRaspi(object):
                 if j % skip_frames != 0: continue
                 if not self.lp: break
                 img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                #cv2.imshow("Raspberry Pi Mode", img)
+                cv2.imshow("Raspberry Pi Mode", img)
                 cv2.imwrite("mode_raspi.jpg", img)
                 results = json.loads(os.popen('alpr -j mode_raspi.jpg').read())
                 i = 0

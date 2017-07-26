@@ -63,7 +63,7 @@ class ModeBoth(object):
                                 plates_found.append((candidate["plate"],\
                                 str(candidate["confidence"])))
                                 self.lp.remove(candidate["plate"])
-                #cv2.imshow("Both Mode", frame.array)
+                cv2.imshow("Both Mode", frame.array)
                 self.raw_capture.truncate(0)
             self.camera.close()
         else:
@@ -116,6 +116,6 @@ class ModeBoth(object):
                                     (time.time() - start))
                                     print("Found at video time: %f" %\
                                     (k / skip_frames / self.FPS))
-                #cv2.imshow("Both Mode", image)
+                cv2.imshow("Both Mode", image)
         cv2.destroyAllWindows()
         return plates_found

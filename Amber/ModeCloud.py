@@ -31,7 +31,7 @@ class ModeCloud(object):
             format = "bgr", use_video_port = True):
                 if cv2.waitKey(1) & 0xFF == ord("q"): break
                 if not self.lp: break
-                #cv2.imshow("Cloud Mode", frame.array)
+                cv2.imshow("Cloud Mode", frame.array)
                 cv2.imwrite("mode_cloud.jpg", frame.array)
                 results = json.loads(os.popen("curl -X POST -F \
                 image0=@mode_cloud.jpg 'http://ec2-54-244-218-121.us-west-2\
@@ -67,7 +67,7 @@ class ModeCloud(object):
                 if j % skip_frames != 0: continue
                 if not self.lp: break
                 img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                #cv2.imshow("Cloud Mode", img)
+                cv2.imshow("Cloud Mode", img)
                 cv2.imwrite("mode_cloud.jpg", img)
                 results = json.loads(os.popen("curl -X POST -F \
                 image0=@mode_cloud.jpg 'http://ec2-54-244-218-121.us-west-2.\
