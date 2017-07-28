@@ -10,5 +10,5 @@ python3 run.py "mode" "fps" "resolution" "video_id" "plate1, plate2, plate3, ...
 
 ## Output
 
-Latency ratio: Number of frames analyzed for license plates / second
-Bandwidth used (Server side): Total number of bytes sent to cloud
+- Latency ratio: Number of frames analyzed for license plates / second
+- Bandwidth used (Server side): Total number of bytes sent to cloud
