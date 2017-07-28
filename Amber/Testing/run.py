@@ -9,7 +9,7 @@ def usage():
     print('========================\n')
     print('python3 run.py "mode" "fps" "resolution" "video_id" "plate1, plate2, plate3, ..."')
     print('        - mode: local or cloud or hybrid')
-    print('        - fps: 1, 5, or 10)
+    print('        - fps: 1, 5, or 10')
     print('        - resolution: 720 or 1080')
     print('        - video_id: 1-6')
     exit()
