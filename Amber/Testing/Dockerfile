@@ -1,6 +1,9 @@
 FROM armv7/armhf-ubuntu:latest
 ENV INITSYSTEM on
 ENV mode=""
+ENV fps=""
+ENV res=""
+ENV id=""
 ENV plates=""
 ADD run.py /
 ADD Local.py /
@@ -24,4 +27,4 @@ RUN pip3 install sk-video
 #WORKDIR /opencv-3.2.0
 #RUN mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=RELEASE -DCMAKE_INSTALL_PREFIX=/usr/local -DOPENCV_EXTRA_MODULES_PATH=/opencv_contrib-3.2.0/modules .. && make && sudo make install && sudo ldconfig
 #WORKDIR /
-CMD python3 run.py $mode $plates
+CMD python3 run.py $mode $fps $res $id $plates
