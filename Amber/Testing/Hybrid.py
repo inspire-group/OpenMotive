@@ -7,8 +7,10 @@ cascade_src = 'lp.xml'
 class Hybrid(object):
 
     # Initialize Hybrid Mode
-    def __init__(self):
-        self.FPS = 10
+    def __init__(self, fps=1, res=720, vid_id=1):
+        self.FPS = fps
+        self.RES = res
+        self.VID_ID = vid_id
         self.lp = []
         # Initialize license plate detection
         self.car_cascade = cv2.CascadeClassifier(cascade_src)
@@ -19,19 +21,22 @@ class Hybrid(object):
 
     # Find license plates
     def find(self):
+        start = time.time()
         plates_found = []
-        metadata = skvideo.io.ffprobe('footage.mp4')['video']
-        videodata = skvideo.io.vreader('footage.mp4',\
+        metadata = skvideo.io.ffprobe('Footage/footage%d-%d.mp4' % (self.RES, self.VID_ID))['video']
+        videodata = skvideo.io.vreader('Footage/footage%d-%d.mp4' % (self.RES, self.VID_ID),\
         num_frames = int(metadata['@nb_frames']))
         frame_rate = metadata['@avg_frame_rate'].split('/')
         skip_frames = int(round(int(frame_rate[0]) /\
         int(frame_rate[1]) / self.FPS))
         k = -1
+        frames_count = 0
         for frame in videodata:
             if cv2.waitKey(1) & 0xFF == ord("q"): break
+            if not self.lp: break
             k += 1
             if k % skip_frames != 0: continue
-            if not self.lp: break
+            frames_count += 1
             image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             image_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
             lps = self.car_cascade.detectMultiScale(image_gray, 1.1, 1)
@@ -60,7 +65,10 @@ class Hybrid(object):
                             print("   %s %12s%12f" % (prefix,\
                             candidate["plate"], candidate["confidence"]))
                             if candidate["plate"] in self.lp:
+                                end = time.time()
                                 plates_found.append((candidate["plate"],\
                                 str(candidate["confidence"])))
                                 self.lp.remove(candidate["plate"])
+                                print('\nLatency ratio (frames analysed per second): %f' % (frames_count/(end-start)))
+                                print('Bandwidth used (frames * num_pixels): %d\n' % (frames_count*self.res*self.res*16/9))
         return plates_found
