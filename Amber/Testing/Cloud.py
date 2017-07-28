@@ -37,7 +37,7 @@ class Cloud(object):
             img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             cv2.imwrite("mode_cloud.jpg", img)
             results = json.loads(os.popen("curl -X POST -F \
-            image0=@mode_cloud.jpg 'http://ec2-54-244-218-121.us-west-2.\
+            image0=@mode_cloud.jpg 'http://ec2-34-211-111-163.us-west-2.\
             compute.amazonaws.com/alpr?n=1'").read())
             i = 0
             for plate in results[0]["results"]:
@@ -55,6 +55,5 @@ class Cloud(object):
                         plates_found.append((candidate["plate"],\
                         str(candidate["confidence"])))
                         self.lp.remove(candidate["plate"])
-                        print('\nLatency ratio (frames analysed per second): %f' % (frames_count/(end-start)))
-                        print('Bandwidth used (frames * num_pixels): %d\n' % (frames_count*self.res*self.res*16/9))
+                        print('\nLatency ratio: %f, FPS: %d' % ((end-start)/frames_count, self.FPS))
         return plates_found

@@ -44,7 +44,7 @@ class ModeBoth(object):
                     cmd += ' -F image' + str(j) + '=@mode_both/'\
                     + str(j) + '.jpg'
                     j += 1
-                cmd += " 'http://ec2-54-244-218-121.us-west-2.compute\
+                cmd += " 'http://ec2-34-211-111-163.us-west-2.compute\
                 .amazonaws.com/alpr?n=" + str(j) + "'"
                 results = json.loads(os.popen(cmd).read())
                 for result in results:
@@ -92,7 +92,7 @@ class ModeBoth(object):
                         cmd += ' -F image' + str(j) + '=@mode_both/'\
                         + str(j) + '.jpg'
                         j += 1
-                    cmd += " 'http://ec2-54-244-218-121.us-west-2\
+                    cmd += " 'http://ec2-34-211-111-163.us-west-2\
                     .compute.amazonaws.com/alpr?n=" + str(j) + "'"
                     results = json.loads(os.popen(cmd).read())
                     print("Time taken for cloud part: %f" % (time.time() - s))

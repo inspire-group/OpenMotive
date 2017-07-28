@@ -34,7 +34,7 @@ class ModeCloud(object):
                 cv2.imshow("Cloud Mode", frame.array)
                 cv2.imwrite("mode_cloud.jpg", frame.array)
                 results = json.loads(os.popen("curl -X POST -F \
-                image0=@mode_cloud.jpg 'http://ec2-54-244-218-121.us-west-2\
+                image0=@mode_cloud.jpg 'http://ec2-34-211-111-163.us-west-2\
                 .compute.amazonaws.com/alpr?n=1'").read())
                 i = 0
                 for plate in results[0]["results"]:
@@ -70,7 +70,7 @@ class ModeCloud(object):
                 cv2.imshow("Cloud Mode", img)
                 cv2.imwrite("mode_cloud.jpg", img)
                 results = json.loads(os.popen("curl -X POST -F \
-                image0=@mode_cloud.jpg 'http://ec2-54-244-218-121.us-west-2.\
+                image0=@mode_cloud.jpg 'http://ec2-34-211-111-163.us-west-2.\
                 compute.amazonaws.com/alpr?n=1'").read())
                 i = 0
                 for plate in results[0]["results"]:

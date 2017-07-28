@@ -49,7 +49,7 @@ class Hybrid(object):
                     cmd += ' -F image' + str(j) + '=@mode_hybrid/'\
                     + str(j) + '.jpg'
                     j += 1
-                cmd += " 'http://ec2-54-244-218-121.us-west-2\
+                cmd += " 'http://ec2-34-211-111-163.us-west-2\
                 .compute.amazonaws.com/alpr?n=" + str(j) + "'"
                 results = json.loads(os.popen(cmd).read())
                 for result in results:
@@ -69,6 +69,5 @@ class Hybrid(object):
                                 plates_found.append((candidate["plate"],\
                                 str(candidate["confidence"])))
                                 self.lp.remove(candidate["plate"])
-                                print('\nLatency ratio (frames analysed per second): %f' % (frames_count/(end-start)))
-                                print('Bandwidth used (frames * num_pixels): %d\n' % (frames_count*self.res*self.res*16/9))
+                                print('\nLatency ratio: %f, FPS: %d' % ((end-start)/frames_count, self.FPS))
         return plates_found

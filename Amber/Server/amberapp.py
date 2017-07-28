@@ -24,6 +24,8 @@ def detect():
         f1 = open('/home/ubuntu/amberapp/time.txt', 'a')
         f1.write('%f\n' % (e - s))
         f1.close()
+        with open('/home/ubuntu/amberapp/size.txt', 'wr+') as f2:
+            f2.writelines(int(lines[0]) + int(os.stat('/home/ubuntu/amberapp/mode_cloud.jpg').st_size))
         return response
     return '<html><body><h1>AMBER ALPR Upload Page</h1></body></html>'
 
