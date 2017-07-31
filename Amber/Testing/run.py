@@ -11,7 +11,7 @@ def usage():
     print('        - mode: local or cloud or hybrid')
     print('        - fps: 1, 5, or 10')
     print('        - resolution: 720 or 1080')
-    print('        - video_id: 1-6')
+    print('        - video_id: 1-12')
     print('        - ip: AWS ip (e.g. 0.0.0.0) - required in Cloud and Hybrid modes\n')
     exit()
 
@@ -31,7 +31,7 @@ else:
 if mode not in ['local', 'cloud', 'hybrid']\
 or video_fps not in ['1', '5', '10']\
 or video_res not in ['720', '1080']\
-or video_id not in ['1', '2', '3', '4', '5', '6']: usage()
+or video_id not in [str(i+1) for i in range(12)]: usage()
 alpr = None
 if mode == 'local':
     alpr = Local(fps=int(video_fps), res=int(video_res), vid_id=int(video_id))
