@@ -53,5 +53,6 @@ class Local(object):
                         plates_found.append((candidate["plate"],\
                         str(candidate["confidence"])))
                         self.lp.remove(candidate["plate"])
-                        print('\nLatency ratio: %f, FPS: %d' % ((end-start)/frames_count, self.FPS))
+                        print('\nLatency ratio: %f, FPS: %d, Time Elapsed: %f, Frame ID: %d'\
+                              % ((end-start)/frames_count, self.FPS, (end-start), frames_count))
         return plates_found

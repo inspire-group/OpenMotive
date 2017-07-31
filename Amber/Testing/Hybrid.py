@@ -7,10 +7,11 @@ cascade_src = 'lp.xml'
 class Hybrid(object):
 
     # Initialize Hybrid Mode
-    def __init__(self, fps=1, res=720, vid_id=1):
+    def __init__(self, fps=1, res=720, vid_id=1, ip='0.0.0.0'):
         self.FPS = fps
         self.RES = res
         self.VID_ID = vid_id
+        self.ip = ip
         self.lp = []
         # Initialize license plate detection
         self.car_cascade = cv2.CascadeClassifier(cascade_src)
@@ -49,7 +50,7 @@ class Hybrid(object):
                     cmd += ' -F image' + str(j) + '=@mode_hybrid/'\
                     + str(j) + '.jpg'
                     j += 1
-                cmd += " 'http://ec2-34-211-111-163.us-west-2\
+                cmd += " 'http://ec2-" + self.ip + ".us-west-2\
                 .compute.amazonaws.com/alpr?n=" + str(j) + "'"
                 results = json.loads(os.popen(cmd).read())
                 for result in results:
@@ -69,5 +70,6 @@ class Hybrid(object):
                                 plates_found.append((candidate["plate"],\
                                 str(candidate["confidence"])))
                                 self.lp.remove(candidate["plate"])
-                                print('\nLatency ratio: %f, FPS: %d' % ((end-start)/frames_count, self.FPS))
+                                print('\nLatency ratio: %f, FPS: %d, Time Elapsed: %f, Frame ID: %d'\
+                                  % ((end-start)/frames_count, self.FPS, (end-start), frames_count))
         return plates_found

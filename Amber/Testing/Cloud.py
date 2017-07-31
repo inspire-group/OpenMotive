@@ -5,10 +5,11 @@ import cv2, json, os, skvideo.io, time
 class Cloud(object):
 
     # Initialize Cloud Mode
-    def __init__(self, fps=1, res=720, vid_id=1):
+    def __init__(self, fps=1, res=720, vid_id=1, ip='0-0-0-0'):
         self.FPS = fps
         self.RES = res
         self.VID_ID = vid_id
+        self.ip = ip
         self.lp = []
         time.sleep(0.1)
 
@@ -37,8 +38,8 @@ class Cloud(object):
             img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             cv2.imwrite("mode_cloud.jpg", img)
             results = json.loads(os.popen("curl -X POST -F \
-            image0=@mode_cloud.jpg 'http://ec2-34-211-111-163.us-west-2.\
-            compute.amazonaws.com/alpr?n=1'").read())
+            image0=@mode_cloud.jpg 'http://ec2-%s.us-west-2.\
+            compute.amazonaws.com/alpr?n=1'" % self.ip).read())
             i = 0
             for plate in results[0]["results"]:
                 i += 1
@@ -55,5 +56,6 @@ class Cloud(object):
                         plates_found.append((candidate["plate"],\
                         str(candidate["confidence"])))
                         self.lp.remove(candidate["plate"])
-                        print('\nLatency ratio: %f, FPS: %d' % ((end-start)/frames_count, self.FPS))
+                        print('\nLatency ratio: %f, FPS: %d, Time Elapsed: %f, Frame ID: %d'\
+                              % ((end-start)/frames_count, self.FPS, (end-start), frames_count))
         return plates_found
