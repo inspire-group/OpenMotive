@@ -11,9 +11,11 @@ def usage():
     print('AMBER USAGE')
     print('========================\n')
     print('python3 run.py "mode" "ip" "perf"')
-    print('        - mode: local or cloud or hybrid')
-    print('        - ip: AWS ip (e.g. 0.0.0.0) - required in Cloud and Hybrid modes\n')
+    print('        - mode: local, cloud or hybrid')
+    print('        - ip: AWS ip (e.g. 0.0.0.0) - required in Cloud and Hybrid modes')
+    print('              (keep empty if not needed)')
     print('        - perf: performance testing - sets FPS and Resolution to max')
+    print('                (keep empty if not needed)\n')
     exit()
 
 PERF = False
