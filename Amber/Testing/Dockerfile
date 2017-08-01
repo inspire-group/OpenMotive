@@ -1,7 +1,7 @@
 FROM armv7/armhf-ubuntu:latest
 ENV INITSYSTEM on
 ENV mode=""
-ENV ip="0.0.0.0"
+ENV ip=""
 ENV perf=""
 ADD run.py /
 ADD Local.py /
@@ -12,8 +12,9 @@ ADD test2.jpg /
 ADD test3.jpg /
 ADD lp.xml /
 ADD mode_hybrid /mode_hybrid/
-ADD opencv-3.2.0 /opencv-3.2.0/
-ADD opencv_contrib-3.2.0 /opencv_contrib-3.2.0/
+ADD Footage /Footage/
+#ADD opencv-3.2.0 /opencv-3.2.0/
+#ADD opencv_contrib-3.2.0 /opencv_contrib-3.2.0/
 RUN apt-get update && apt-get install -y openalpr openalpr-daemon openalpr-utils libopenalpr-dev
 RUN apt-get install -y python3 python3-dev python3-pip
 #RUN apt-get install -y build-essential cmake pkg-config

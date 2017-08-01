@@ -3,9 +3,8 @@ from Cloud import Cloud
 from Hybrid import Hybrid
 import sys
 
-PLATES = [1:'78197', 2:'T638802C', 3:'T640951C', 4:'N49EPU', 5:'382946', 6:'R43HBY',\
-          7:'X35ELG', 8:'V68EPT', 9:'JCG92V', 10:'EEB4657', 11:'5N23', 12:'GDB3917']
-
+PLATES = {1:'78197', 2:'T638802C', 3:'T640951C', 4:'N49EPU', 5:'382946', 6:'R43HBY',\
+          7:'X35ELG', 8:'V68EPT', 9:'JCG92V', 10:'EEB4657', 11:'5N23', 12:'GDB3917'}
 def usage():
     print('\n========================')
     print('AMBER USAGE')
