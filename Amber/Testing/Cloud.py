@@ -5,17 +5,16 @@ import cv2, json, os, skvideo.io, time
 class Cloud(object):
 
     # Initialize Cloud Mode
-    def __init__(self, fps=1, res=720, vid_id=1, ip='0-0-0-0'):
+    def __init__(self, fps=1, res=720, ip='0-0-0-0'):
         self.FPS = fps
         self.RES = res
-        self.VID_ID = vid_id
         self.ip = ip
 
     # Find license plates
-    def find(self, lp=''):
+    def find(self, lp=[]):
         start = time.time()
-        metadata = skvideo.io.ffprobe('Footage/footage%d-%d.mp4' % (self.RES, self.VID_ID))['video']
-        videodata = skvideo.io.vreader('Footage/footage%d-%d.mp4' % (self.RES, self.VID_ID),\
+        metadata = skvideo.io.ffprobe('Footage/footage%d.mp4' % self.RES)['video']
+        videodata = skvideo.io.vreader('Footage/footage%d.mp4' % self.RES,\
         num_frames = int(metadata['@nb_frames']))
         frame_rate = metadata['@avg_frame_rate'].split('/')
         skip_frames = int(round(int(frame_rate[0]) /\
@@ -24,6 +23,7 @@ class Cloud(object):
         frames_count = 0
         for frame in videodata:
             if cv2.waitKey(1) & 0xFF == ord("q"): break
+            if not lp: break
             j += 1
             if j % skip_frames != 0: continue
             frames_count += 1
@@ -36,7 +36,13 @@ class Cloud(object):
             for plate in results[0]["results"]:
                 i += 1
                 for candidate in plate["candidates"]:
-                    if candidate["plate"] == lp:
+                    if candidate["plate"] in lp:
+                        old_start = start
                         end = time.time()
-                        return (end-start)/frames_count
-        return -1
+                        start = end
+                        lp.remove(candidate["plate"])
+                        print('LOCAL - Plate %s, Latency %f, FPS %f, RES %d'\
+                        % (candidate["plate"], (end-old_start)/frames_count,\
+                        self.FPS, self.RES))
+                        break
+        print('\n\nDONE LOCAL\n\n')

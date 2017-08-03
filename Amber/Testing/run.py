@@ -3,8 +3,10 @@ from Cloud import Cloud
 from Hybrid import Hybrid
 import sys
 
-PLATES = {1:'78197', 2:'T638802C', 3:'T640951C', 4:'N49EPU', 5:'382946', 6:'R43HBY',\
-          7:'X35ELG', 8:'V68EPT', 9:'JCG92V', 10:'EEB4657', 11:'5N23', 12:'GDB3917'}
+PLATES = ['9D41', '1Y31', 'E23GLV', 'OL4958J', 'AP118Y', 'T687892C',\
+            '1K59', '8J39', 'ROAD70', 'T635970C', 'T666363C', '5L95'\
+            'EEK5870', '4M38']
+
 def usage():
     print('\n========================')
     print('AMBER USAGE')
@@ -37,20 +39,25 @@ else: usage()
 FPS = 10
 RES = 1080
 alpr = None
-for video_id in range(1, 13):
-    if PERF:
-        if mode == 'local': alpr = Local(fps=FPS, res=RES, vid_id=video_id)
-        elif mode == 'cloud': alpr = Cloud(fps=FPS, res=RES, vid_id=video_id, ip=aws_ip)
-        elif mode == 'hybrid': alpr = Hybrid(fps=FPS, res=RES, vid_id=video_id, ip=aws_ip)
-        print("PERFORMANCE - SPAF: %f" % alpr.find(PLATES[video_id]))
-    else:
-        for video_fps in [1, 5, 10]:
-            if mode == 'local': alpr = Local(fps=video_fps, res=RES, vid_id=video_id)
-            elif mode == 'cloud': alpr = Cloud(fps=video_fps, res=RES, vid_id=video_id, ip=aws_ip)
-            elif mode == 'hybrid': alpr = Hybrid(fps=video_fps, res=RES, vid_id=video_id, ip=aws_ip)
-            print("FPS %d - SPAF: %f" % (video_fps, alpr.find(PLATES[video_id])))
-        for video_res in [720, 1080]:
-            if mode == 'local': alpr = Local(fps=FPS, res=video_res, vid_id=video_id)
-            elif mode == 'cloud': alpr = Cloud(fps=FPS, res=video_res, vid_id=video_id, ip=aws_ip)
-            elif mode == 'hybrid': alpr = Hybrid(fps=FPS, res=video_res, vid_id=video_id, ip=aws_ip)
-            print("RES %d - SPAF: %f" % (video_res, alpr.find(PLATES[video_id])))
+if PERF:
+    if mode == 'local': alpr = Local(fps=FPS, res=RES)
+    elif mode == 'cloud': alpr = Cloud(fps=FPS, res=RES, ip=aws_ip)
+    elif mode == 'hybrid': alpr = Hybrid(fps=FPS, res=RES, ip=aws_ip)
+    print('\n\nPERFORMANCE\n\n')
+    alpr.find(PLATES)
+    print('\n\nDONE PERFORMACE\n\n')
+else:
+    for video_fps in [1, 5, 10]:
+        if mode == 'local': alpr = Local(fps=video_fps, res=RES)
+        elif mode == 'cloud': alpr = Cloud(fps=video_fps, res=RES, ip=aws_ip)
+        elif mode == 'hybrid': alpr = Hybrid(fps=video_fps, res=RES, ip=aws_ip)
+        print('\n\nFPS\n\n')
+        alpr.find(PLATES)
+        print('\n\nDONE FPS\n\n')
+    for video_res in [720, 1080]:
+        if mode == 'local': alpr = Local(fps=FPS, res=video_res)
+        elif mode == 'cloud': alpr = Cloud(fps=FPS, res=video_res, ip=aws_ip)
+        elif mode == 'hybrid': alpr = Hybrid(fps=FPS, res=video_res, ip=aws_ip)
+        print('\n\nRESOLUTION\n\n')
+        alpr.find(PLATES)
+        print('\n\nDONE RESOLUTION\n\n')
