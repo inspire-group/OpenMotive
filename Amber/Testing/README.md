@@ -2,13 +2,12 @@
 
 ## Command
 
-python3 run.py "mode" "fps" "resolution" "video_id" "plate1, plate2, plate3, ..."
+python3 run.py "mode" "ip" "perf"
 - mode: local or cloud or hybrid
-- fps: 1, 5, or 10
-- resolution: 720 or 1080
-- video_id: 1-6
+- ip: AWS ip
+- resolution: 
 
 ## Output
 
-- Latency ratio: Number of frames analyzed for license plates / second
+- Latency: Seconds per analyzed frame
 - Bandwidth used (Server side): Total number of bytes sent to cloud
