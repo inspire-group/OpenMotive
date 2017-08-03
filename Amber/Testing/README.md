@@ -5,7 +5,7 @@
 python3 run.py "mode" "ip" "perf"
 - mode: local or cloud or hybrid
 - ip: AWS ip
-- resolution: 
+- perf: 'perf' for performance testing mode
 
 ## Output
 
