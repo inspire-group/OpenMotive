@@ -42,8 +42,7 @@ class Hybrid(object):
                     cmd += ' -F image' + str(j) + '=@mode_hybrid/'\
                     + str(j) + '.jpg'
                     j += 1
-                cmd += " 'http://ec2-" + self.ip + ".us-west-2\
-                .compute.amazonaws.com/alpr?n=" + str(j) + "&mode=3'"
+                cmd += " 'http://ec2-" + self.ip + ".us-west-2.compute.amazonaws.com/alpr?n=" + str(j) + "&mode=3'"
                 results = json.loads(os.popen(cmd).read())
                 for result in results:
                     i = 0
