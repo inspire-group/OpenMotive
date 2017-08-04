@@ -51,12 +51,10 @@ class Hybrid(object):
                         i += 1
                         for candidate in plate["candidates"]:
                             if candidate["plate"] in lp:
-                                old_start = start
                                 end = time.time()
-                                start = end
                                 lp.remove(candidate["plate"])
                                 print('LOCAL - Plate %s, Latency %f, FPS %f, RES %d'\
-                                % (candidate["plate"], (end-old_start)/frames_count,\
+                                % (candidate["plate"], (end-start)/frames_count,\
                                 self.FPS, self.RES))
                                 break
         print('\n\nDONE LOCAL\n\n')
