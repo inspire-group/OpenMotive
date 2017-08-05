@@ -27,6 +27,7 @@ class Hybrid(object):
         frames_count = 0
         for frame in videodata:
             if cv2.waitKey(1) & 0xFF == ord("q"): break
+            if not lp: break
             k += 1
             if k % skip_frames != 0: continue
             frames_count += 1
