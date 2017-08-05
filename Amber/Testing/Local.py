@@ -13,7 +13,8 @@ class Local(object):
     def find(self, lp=[]):
         start = time.time()
         metadata = skvideo.io.ffprobe('Footage/footage%d.mp4' % self.RES)['video']
-        videodata = skvideo.io.vreader('Footage/footage%d.mp4' % self.RES)
+        videodata = skvideo.io.vreader('Footage/footage%d.mp4' % self.RES,\
+        num_frames = 62292)
         frame_rate = metadata['@avg_frame_rate'].split('/')
         skip_frames = int(round(int(frame_rate[0]) /\
         int(frame_rate[1]) / self.FPS))
