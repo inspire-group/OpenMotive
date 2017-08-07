@@ -29,7 +29,7 @@ class Cloud(object):
             frames_count += 1
             img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             cv2.imwrite("mode_cloud.jpg", img)
-            results = json.loads(os.popen("curl -X POST -F image0=@mode_cloud.jpg 'http://ec2-%s.us-west-2.compute.amazonaws.com/alpr?n=1&mode=2'" % self.ip).read())
+            results = json.loads(os.popen("curl -s -X POST -F image0=@mode_cloud.jpg 'http://ec2-%s.us-west-2.compute.amazonaws.com/alpr?n=1&mode=2'" % self.ip).read())
             i = 0
             for plate in results[0]["results"]:
                 i += 1

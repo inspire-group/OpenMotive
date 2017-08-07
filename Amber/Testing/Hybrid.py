@@ -35,7 +35,7 @@ class Hybrid(object):
             image_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
             lps = self.car_cascade.detectMultiScale(image_gray, 1.1, 1)
             if len(lps) != 0:
-                cmd = 'curl -X POST'
+                cmd = 'curl -s -X POST'
                 j = 0
                 for (x, y, w, h) in lps:
                     cv2.imwrite("mode_hybrid/%d.jpg" % j,\
