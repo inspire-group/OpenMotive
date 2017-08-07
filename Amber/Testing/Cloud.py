@@ -37,8 +37,8 @@ class Cloud(object):
                     if candidate["plate"] in lp:
                         end = time.time()
                         lp.remove(candidate["plate"])
-                        print('LOCAL - Plate %s, Latency %f, FPS %f, RES %d'\
+                        print('CLOUD - Plate %s, Latency %f, FPS %f, RES %d'\
                         % (candidate["plate"], (end-start)/frames_count,\
                         self.FPS, self.RES))
                         break
-        print('\n\nDONE LOCAL\n\n')
+        print('\n\nDONE CLOUD\n\n')
