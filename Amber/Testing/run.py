@@ -40,6 +40,8 @@ FPS = 10
 RES = 1080
 alpr = None
 if PERF:
+    FPS = 1
+    RES = 720
     if mode == 'local': alpr = Local(fps=FPS, res=RES)
     elif mode == 'cloud': alpr = Cloud(fps=FPS, res=RES, ip=aws_ip)
     elif mode == 'hybrid': alpr = Hybrid(fps=FPS, res=RES, ip=aws_ip)
