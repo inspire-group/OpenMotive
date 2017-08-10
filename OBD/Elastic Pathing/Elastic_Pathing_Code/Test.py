@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt, numpy as np, os, random, re, sqlite3 as sql
 
 # Track filename
 file = 'track-5.sq3'
+os.popen('cp central_new_jersey/P4/%s .' % file)
 
 # Open and store file
 conn = sql.connect(file)
@@ -25,7 +26,7 @@ for i in original_speeds:
 	if i >= 20: ex_def_thresh += 1
 
 # Run Elastic Pathing with shuffling (and rounding, and diff)
-def shuffle_round_diff(skip_length=20, iterations=30, will_round=False, nearest=0, will_diff=False, diff_min=0, diff_max=10):
+def shuffle_round_diff(skip_length=40, iterations=10, will_round=False, nearest=0, will_diff=False, diff_min=0, diff_max=10):
 	skips = [1]
 	for i in range(1, len(original)):
 		if i % skip_length == 0: skips.append(i)
@@ -63,7 +64,7 @@ def shuffle_round_diff(skip_length=20, iterations=30, will_round=False, nearest=
 			if result >= 0: error += result
 			else: no_results += 1
 		threshold(new_speeds, thresh=DEF_THRESH)
-		errors[k] = 100*error/(iterations-no_results)/dist
+		errors[k] = 100*float(error)/float(iterations-no_results)/dist
 	restore_file()
 	return (threshold(new_speeds, thresh=DEF_THRESH), [(skips[i], 100-errors[i]) for i in range(len(errors))])
 
@@ -91,7 +92,7 @@ def threshold(speeds, thresh=0, with_time=False):
 	else:
 		for entry in speeds:
 			if entry >= thresh: count += 1
-	return 100*abs(count-ex_def_thresh)/ex_def_thresh
+	return 100*float(abs(count-ex_def_thresh))/float(ex_def_thresh)
 
 def diff(min=0, max=10, iterations=30):
 	average = 0
@@ -106,8 +107,8 @@ def diff(min=0, max=10, iterations=30):
 			average += result
 			error += threshold(new_speeds, thresh=DEF_THRESH)
 		else: no_results += 1
-	average = 100 - (100*average/(dist*(iterations-no_results)))
-	error /= iterations-no_results
+	average = 100 - (100*float(average)/(dist*(iterations-no_results)))
+	error /= float(iterations-no_results)
 	restore_file()
 	return (error, average)
 
@@ -151,7 +152,7 @@ try:
 		print('\nSHUFFLE with resolution 20 with DIFF %d' % j)
 	        print('(thresh_error, [(interval, accuracy)])')
         	print('\n' + ''.join(['=' for i in range(50)]))
-	        print(shuffle_round_diff(will_diff, diff_max=j))
+	        print(shuffle_round_diff(will_diff=True, diff_max=j))
         	print('\n' + ''.join(['=' for i in range(50)]))
 except KeyboardInterrupt:
 	restore_file()
