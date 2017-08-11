@@ -1,0 +1,11 @@
+CLOUD (Number of bytes sent)
+
+23016971439
+
+HYBRID (Number of bytes sent)
+
+659685089
+
+HYBRID to CLOUD bandwidth ratio
+
+1 : 34.890846894676439
