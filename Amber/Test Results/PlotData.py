@@ -17,20 +17,20 @@ cloud_avg = {1 : np.mean(cloud[1]), 5 : np.mean(cloud[5]), 10 : np.mean(cloud[10
 hybrid_avg = {1 : np.mean(hybrid[1]), 5 : np.mean(hybrid[5]), 10 : np.mean(hybrid[10])}
 
 plt.plot([1 for i in local[1]], [i for i in local[1]], 'ro',\
-         [5 for i in local[5]], [i for i in local[5]], 'ro',\
-         [10 for i in local[10]], [i for i in local[10]], 'ro',\
+         [5 for i in local[5]], [5*i for i in local[5]], 'ro',\
+         [10 for i in local[10]], [10*i for i in local[10]], 'ro',\
          [1 for i in cloud[1]], [i for i in cloud[1]], 'go',\
-         [5 for i in cloud[5]], [i for i in cloud[5]], 'go',\
-         [10 for i in cloud[10]], [i for i in cloud[10]], 'go',\
+         [5 for i in cloud[5]], [5*i for i in cloud[5]], 'go',\
+         [10 for i in cloud[10]], [10*i for i in cloud[10]], 'go',\
          [1 for i in hybrid[1]], [i for i in hybrid[1]], 'bo',\
-         [5 for i in hybrid[5]], [i for i in hybrid[5]], 'bo',\
-         [10 for i in hybrid[10]], [i for i in hybrid[10]], 'bo')
-plt.errorbar([1, 5, 10], [np.mean(local[1]), np.mean(local[5]), np.mean(local[10])], [np.std(local[1]), np.std(local[5]), np.std(local[10])], linestyle=None, marker='^', color='y')
-plt.errorbar([1, 5, 10], [np.mean(cloud[1]), np.mean(cloud[5]), np.mean(cloud[10])], [np.std(cloud[1]), np.std(cloud[5]), np.std(cloud[10])], linestyle=None, marker='^', color='y')
-plt.errorbar([1, 5, 10], [np.mean(hybrid[1]), np.mean(hybrid[5]), np.mean(hybrid[10])], [np.std(hybrid[1]), np.std(hybrid[5]), np.std(hybrid[10])], linestyle=None, marker='^', color='y')
-plt.text(5.5, 5.5, 'Local', color='r')
-plt.text(5.5, 4.25, 'Cloud', color='g')
-plt.text(5.5, 8, 'Hybrid', color='b')
+         [5 for i in hybrid[5]], [5*i for i in hybrid[5]], 'bo',\
+         [10 for i in hybrid[10]], [10*i for i in hybrid[10]], 'bo')
+plt.errorbar([1, 5, 10], [np.mean(local[1]), 5*np.mean(local[5]), 10*np.mean(local[10])], [np.std(local[1]), np.std(5*local[5]), np.std(10*local[10])], linestyle=None, marker='^', color='y')
+plt.errorbar([1, 5, 10], [np.mean(cloud[1]), 5*np.mean(cloud[5]), 10*np.mean(cloud[10])], [np.std(cloud[1]), np.std(5*cloud[5]), np.std(10*cloud[10])], linestyle=None, marker='^', color='y')
+plt.errorbar([1, 5, 10], [np.mean(hybrid[1]), 5*np.mean(hybrid[5]), 10*np.mean(hybrid[10])], [np.std(hybrid[1]), np.std(5*hybrid[5]), np.std(10*hybrid[10])], linestyle=None, marker='^', color='y')
+plt.text(9, 50, 'Local', color='r')
+plt.text(5.5, 20, 'Cloud', color='g')
+plt.text(5.5, 55, 'Hybrid', color='b')
 plt.xlabel('FPS')
 plt.ylabel('Performance')
 plt.title('Performance vs. FPS (600MHz, 1080p)')
