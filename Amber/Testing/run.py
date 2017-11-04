@@ -50,7 +50,8 @@ if PERF:
     alpr.find(COPY)
     print('\n\nDONE PERFORMACE\n\n')
 else:
-    for video_fps in [1, 5, 10]:
+#    for video_fps in [1, 5, 10]:
+    for video_fps in [0.1, 0.5]:
         if mode == 'local': alpr = Local(fps=video_fps, res=RES)
         elif mode == 'cloud': alpr = Cloud(fps=video_fps, res=RES, ip=aws_ip)
         elif mode == 'hybrid': alpr = Hybrid(fps=video_fps, res=RES, ip=aws_ip)
@@ -58,11 +59,11 @@ else:
         COPY = PLATES[:]
         alpr.find(COPY)
         print('\n\nDONE FPS\n\n')
-    for video_res in [720, 1080]:
-        if mode == 'local': alpr = Local(fps=FPS, res=video_res)
-        elif mode == 'cloud': alpr = Cloud(fps=FPS, res=video_res, ip=aws_ip)
-        elif mode == 'hybrid': alpr = Hybrid(fps=FPS, res=video_res, ip=aws_ip)
-        print('\n\n%d RESOLUTION\n\n' % video_res)
-        COPY = PLATES[:]
-        alpr.find(COPY)
-        print('\n\nDONE RESOLUTION\n\n')
+#    for video_res in [720, 1080]:
+#        if mode == 'local': alpr = Local(fps=FPS, res=video_res)
+#        elif mode == 'cloud': alpr = Cloud(fps=FPS, res=video_res, ip=aws_ip)
+#        elif mode == 'hybrid': alpr = Hybrid(fps=FPS, res=video_res, ip=aws_ip)
+#        print('\n\n%d RESOLUTION\n\n' % video_res)
+#        COPY = PLATES[:]
+#        alpr.find(COPY)
+#        print('\n\nDONE RESOLUTION\n\n')
