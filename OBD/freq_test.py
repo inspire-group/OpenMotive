@@ -1,11 +1,14 @@
 import can, os, time
 
+PID_REQUEST = 0x7DF
+
 print('\nBringing up CAN0 (B)...')
 os.system('sudo ip link set can0 up type can bitrate 500000')
 try:
     bus = can.interface.Bus(channel='can0', bustype='socketcan_native')
 except OSError:
     print('Cannot find PiCan Board')
+    os.system('sudo ip link set can0 ')
     exit()
 print('Ready!\n')
 
